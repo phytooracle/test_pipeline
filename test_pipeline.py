@@ -123,9 +123,10 @@ def main():
 
         # Iterate through each plant and run commands outlined in YAML file.
         for plant in glob.glob(os.path.join(dir_name, '*'))[:1]:
+            plant_name = os.path.basename(plant)
     
             for k, v in dictionary['modules'].items():
-                command = v['command'].replace('${PLANT_NAME}', plant).replace('${MODEL_PATH}', model_name)
+                command = v['command'].replace('${PLANT_PATH}', plant).replace('${MODEL_PATH}', model_name).replace('${PLANT_NAME}', plant_name)
                 print(command)
                 sp.call(command, shell=True)
 
