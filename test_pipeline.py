@@ -139,7 +139,7 @@ def main():
         # Iterate through each plant and run commands outlined in YAML file.
         plant_list = glob.glob(os.path.join(dir_name, '*'))
 
-        with multiprocessing.Pool(multiprocessing.cpu_count()) as p:
+        with multiprocessing.Pool(multiprocessing.cpu_count()//2) as p:
             p.map(process_plant, plant_list)
 
 
