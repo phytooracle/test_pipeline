@@ -151,8 +151,8 @@ def main():
         with multiprocessing.Pool(multiprocessing.cpu_count()//4) as p:
             p.map(process_plant, plant_list)
 
-    input_dir = ''.join([args.date, '_test_set'])
-    run_plant_volume(args.date, input_dir)
+    # input_dir = ''.join([args.date, '_test_set'])
+    # run_plant_volume(args.date, input_dir)
 
     # if os.path.isdir(args.date):
     #     shutil.move(dir_name, args.date)
