@@ -97,6 +97,11 @@ def get_model_files(model_path):
     return os.path.basename(model_path)
 
 
+def run_plant_volume(scan_date, input_dir):
+
+    sp.call('singularity build 3d_entropy_merge.simg docker://phytooracle/3d_entropy_merge:latest')
+    sp.call(f'singularity run 3d_entropy_merge.simg -d {scan_date} -ie {input_dir}', shell=True)
+
 # --------------------------------------------------
 def main():
     """Make a jazz noise here"""
@@ -129,6 +134,9 @@ def main():
                 command = v['command'].replace('${PLANT_PATH}', plant).replace('${MODEL_PATH}', model_name).replace('${PLANT_NAME}', plant_name)
                 print(command)
                 sp.call(command, shell=True)
+
+        input_dir = ''.join([args.date, '_test_set'])
+
 
 
 # --------------------------------------------------
