@@ -37,18 +37,9 @@ def get_args():
 
 
 # --------------------------------------------------
-def build_containers(yaml_dict):
-    
-    simg_name = yaml_dict['module_1']['container']['simg_name']
-    dockerhub_path = yaml_dict['module_1']['container']['dockerhub_path']
-
-    if not os.path.isfile(simg_name):
-        print(f'Building {simg_name}.')
-        sp.call(f'singularity build {simg_name} {dockerhub_path}', shell=True)
-
-
-# --------------------------------------------------
 def download_raw_data(irods_path):
+    """Download raw dataset from CyVerse DataStore"""
+
     args = get_args()
     file_name = os.path.basename(irods_path)
     dir_name = file_name.split('.')[0]
@@ -80,6 +71,7 @@ def download_raw_data(irods_path):
 
 # --------------------------------------------------
 def build_containers(dictionary):
+    """Get command-line arguments"""
 
     for k, v in dictionary['modules'].items():
         container = v['container']
