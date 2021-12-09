@@ -114,11 +114,14 @@ def main():
                                     dictionary['paths']['cyverse']['input']['subdir'], 
                                     ''.join([str(args.date), str(dictionary['paths']['cyverse']['input']['suffix'])]))
 
-        dir_name = download_raw_data(cyverse_path)
+        # Build necessary containers outlined in YAML file.
         build_containers(dictionary)
+        
+        # Download raw test dataset and GGCNN model weights.
+        dir_name = download_raw_data(cyverse_path)
         model_name = get_model_files('/iplant/home/shared/phytooracle/season_10_lettuce_yr_2020/level_0/necessary_files/dgcnn_3d_model.pth')
 
-
+        # Iterate through each plant and run commands outlined in YAML file.
         for plant in glob.glob(os.path.join(dir_name, '*'))[:1]:
     
             for k, v in dictionary['modules'].items():
