@@ -12,6 +12,7 @@ import subprocess as sp
 import yaml
 import glob
 import multiprocessing
+import shutil
 
 
 # --------------------------------------------------
@@ -96,8 +97,9 @@ def run_plant_volume(scan_date, input_dir):
     if not os.path.isdir('3d_entropy_merge.simg'):
         print('Building 3d_entropy_merge.simg.')
         sp.call('singularity build 3d_entropy_merge.simg docker://phytooracle/3d_entropy_merge:latest', shell=True)
-        
-    sp.call(f'singularity run 3d_entropy_merge.simg -d {scan_date} -ie {input_dir}', shell=True)
+    
+    if not os.path.isfile(os.path.join(scan_date, f'{scan_date}_tda.csv')):
+        sp.call(f'singularity run 3d_entropy_merge.simg -d {scan_date} -ie {input_dir}', shell=True)
 
 
 def process_plant(plant):
@@ -136,15 +138,23 @@ def main():
         global model_name
         model_name = get_model_files('/iplant/home/shared/phytooracle/season_10_lettuce_yr_2020/level_0/necessary_files/dgcnn_3d_model.pth')
 
-        # Iterate through each plant and run commands outlined in YAML file.
-        plant_list = glob.glob(os.path.join(dir_name, '*'))
+        # # Iterate through each plant and run commands outlined in YAML file.
+        # plant_list = glob.glob(os.path.join(dir_name, '*'))
 
-        with multiprocessing.Pool(multiprocessing.cpu_count()//4) as p:
-            p.map(process_plant, plant_list)
+        # with multiprocessing.Pool(multiprocessing.cpu_count()//4) as p:
+        #     p.map(process_plant, plant_list)
 
 
     input_dir = ''.join([args.date, '_test_set'])
     run_plant_volume(args.date, input_dir)
+
+    if os.path.isdir(args.date):
+        shutil.move(dir_name, args.date)
+
+    # for item in ['workflow_3']:
+
+    #     pipeline_out, pipeline_tag, processed_outdir = get_tags(season_dict, args.season, args.sensor, item)
+    #     tar_outputs(scan_date, pipeline_out, pipeline_tag, processed_outdir)
 
 
 
