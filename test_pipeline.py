@@ -131,6 +131,7 @@ def main():
         
         # Download raw test dataset and GGCNN model weights.
         dir_name = download_raw_data(cyverse_path)
+        global model_name
         model_name = get_model_files('/iplant/home/shared/phytooracle/season_10_lettuce_yr_2020/level_0/necessary_files/dgcnn_3d_model.pth')
 
         # Iterate through each plant and run commands outlined in YAML file.
