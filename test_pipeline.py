@@ -28,12 +28,19 @@ def get_args():
                         help='Add flag if running on an HPC system.',
                         action='store_true')
 
-    parser.add_argument('-date',
+    parser.add_argument('-d',
                         '--date',
                         help='Scan date to process.',
                         metavar='scan_date',
                         type=str,
                         required=False)
+
+    parser.add_argument('-y',
+                        '--yaml',
+                        help='YAML file to use for processing.',
+                        metavar='yaml',
+                        type=str,
+                        required=True)
 
     return parser.parse_args()
 
@@ -118,7 +125,7 @@ def main():
 
     args = get_args()
 
-    with open("./config.yaml", 'r') as stream:
+    with open(args.yaml, 'r') as stream:
         try:
             global dictionary
             dictionary = yaml.safe_load(stream)
