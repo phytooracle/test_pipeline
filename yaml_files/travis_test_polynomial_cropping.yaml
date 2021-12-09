@@ -11,7 +11,7 @@ modules:
       dockerhub_path: docker://phytooracle/polynomial_surface_fitting_s10:latest
     command: singularity run -B $(pwd):/mnt --pwd /mnt polynomial_surface_fitting_s10.simg -p ${PLANT_PATH} -c
     output_dir: 
-      pointcloud_outdir: pointclouds
+      pointcloud_outdir: segmentation_pointclouds
       plant_reports_outdir: plant_reports
 
   2:
