@@ -138,24 +138,17 @@ def main():
         global model_name
         model_name = get_model_files('/iplant/home/shared/phytooracle/season_10_lettuce_yr_2020/level_0/necessary_files/dgcnn_3d_model.pth')
 
-        # # Iterate through each plant and run commands outlined in YAML file.
-        # plant_list = glob.glob(os.path.join(dir_name, '*'))
+        # Iterate through each plant and run commands outlined in YAML file.
+        plant_list = glob.glob(os.path.join(dir_name, '*'))
 
-        # with multiprocessing.Pool(multiprocessing.cpu_count()//4) as p:
-        #     p.map(process_plant, plant_list)
-
+        with multiprocessing.Pool(multiprocessing.cpu_count()//4) as p:
+            p.map(process_plant, plant_list)
 
     input_dir = ''.join([args.date, '_test_set'])
     run_plant_volume(args.date, input_dir)
 
-    if os.path.isdir(args.date):
-        shutil.move(dir_name, args.date)
-
-    # for item in ['workflow_3']:
-
-    #     pipeline_out, pipeline_tag, processed_outdir = get_tags(season_dict, args.season, args.sensor, item)
-    #     tar_outputs(scan_date, pipeline_out, pipeline_tag, processed_outdir)
-
+    # if os.path.isdir(args.date):
+    #     shutil.move(dir_name, args.date)
 
 
 # --------------------------------------------------
