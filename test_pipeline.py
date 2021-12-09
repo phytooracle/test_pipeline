@@ -108,6 +108,8 @@ def process_plant(plant):
         command = v['command'].replace('${PLANT_PATH}', plant).replace('${MODEL_PATH}', model_name).replace('${PLANT_NAME}', plant_name)
         print(command)
         sp.call(command, shell=True)
+
+
 # --------------------------------------------------
 def main():
     """Make a jazz noise here"""
@@ -141,8 +143,8 @@ def main():
             p.map(process_plant, plant_list)
 
 
-        input_dir = ''.join([args.date, '_test_set'])
-        run_plant_volume(args.date, input_dir)
+    input_dir = ''.join([args.date, '_test_set'])
+    run_plant_volume(args.date, input_dir)
 
 
 
