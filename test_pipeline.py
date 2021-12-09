@@ -97,10 +97,12 @@ def get_model_files(model_path):
     return os.path.basename(model_path)
 
 
+# --------------------------------------------------
 def run_plant_volume(scan_date, input_dir):
 
     sp.call('singularity build 3d_entropy_merge.simg docker://phytooracle/3d_entropy_merge:latest')
     sp.call(f'singularity run 3d_entropy_merge.simg -d {scan_date} -ie {input_dir}', shell=True)
+
 
 # --------------------------------------------------
 def main():
