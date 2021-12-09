@@ -142,6 +142,7 @@ def main():
 
 
         input_dir = ''.join([args.date, '_test_set'])
+        run_plant_volume(args.date, input_dir)
 
 
 
