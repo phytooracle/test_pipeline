@@ -11,6 +11,8 @@ import sys
 import subprocess as sp
 import yaml
 import glob
+import multiprocessing
+import shutil
 
 
 # --------------------------------------------------
@@ -26,12 +28,19 @@ def get_args():
                         help='Add flag if running on an HPC system.',
                         action='store_true')
 
-    parser.add_argument('-date',
+    parser.add_argument('-d',
                         '--date',
                         help='Scan date to process.',
                         metavar='scan_date',
                         type=str,
                         required=False)
+
+    parser.add_argument('-y',
+                        '--yaml',
+                        help='YAML file to use for processing.',
+                        metavar='yaml',
+                        type=str,
+                        required=True)
 
     return parser.parse_args()
 
@@ -94,9 +103,20 @@ def run_plant_volume(scan_date, input_dir):
 
     if not os.path.isdir('3d_entropy_merge.simg'):
         print('Building 3d_entropy_merge.simg.')
-        sp.call('singularity build 3d_entropy_merge.simg docker://phytooracle/3d_entropy_merge:latest')
-        
-    sp.call(f'singularity run 3d_entropy_merge.simg -d {scan_date} -ie {input_dir}', shell=True)
+        sp.call('singularity build 3d_entropy_merge.simg docker://phytooracle/3d_entropy_merge:latest', shell=True)
+    
+    if not os.path.isfile(os.path.join(scan_date, f'{scan_date}_tda.csv')):
+        sp.call(f'singularity run 3d_entropy_merge.simg -d {scan_date} -ie {input_dir}', shell=True)
+
+
+def process_plant(plant):
+
+    plant_name = os.path.basename(plant)
+
+    for k, v in dictionary['modules'].items():
+        command = v['command'].replace('${PLANT_PATH}', plant).replace('${MODEL_PATH}', model_name).replace('${PLANT_NAME}', plant_name)
+        print(command)
+        sp.call(command, shell=True)
 
 
 # --------------------------------------------------
@@ -105,8 +125,9 @@ def main():
 
     args = get_args()
 
-    with open("./config.yaml", 'r') as stream:
+    with open(args.yaml, 'r') as stream:
         try:
+            global dictionary
             dictionary = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
             print(exc)
@@ -121,19 +142,20 @@ def main():
         
         # Download raw test dataset and GGCNN model weights.
         dir_name = download_raw_data(cyverse_path)
+        global model_name
         model_name = get_model_files('/iplant/home/shared/phytooracle/season_10_lettuce_yr_2020/level_0/necessary_files/dgcnn_3d_model.pth')
 
         # Iterate through each plant and run commands outlined in YAML file.
-        for plant in glob.glob(os.path.join(dir_name, '*')):
-            plant_name = os.path.basename(plant)
-    
-            for k, v in dictionary['modules'].items():
-                command = v['command'].replace('${PLANT_PATH}', plant).replace('${MODEL_PATH}', model_name).replace('${PLANT_NAME}', plant_name)
-                print(command)
-                sp.call(command, shell=True)
+        plant_list = glob.glob(os.path.join(dir_name, '*'))
 
-        input_dir = ''.join([args.date, '_test_set'])
+        with multiprocessing.Pool(multiprocessing.cpu_count()//4) as p:
+            p.map(process_plant, plant_list)
 
+    # input_dir = ''.join([args.date, '_test_set'])
+    # run_plant_volume(args.date, input_dir)
+
+    # if os.path.isdir(args.date):
+    #     shutil.move(dir_name, args.date)
 
 
 # --------------------------------------------------
