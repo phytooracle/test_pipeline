@@ -23,7 +23,7 @@ modules:
     container: 
       simg_name: 3d_neighbor_removal.simg
       dockerhub_path: docker://phytooracle/3d_neighbor_removal:latest
-    command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_neighbor_removal.simg -p ${PLANT_NAME} -e 0.01 -po segmentation_pointclouds -fo plant_reports
+    command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_neighbor_removal.simg -p ${PLANT_NAME} -e 0.01 -pod segmentation_pointclouds -fod plant_reports
   
 
 paths:
