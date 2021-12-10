@@ -120,6 +120,7 @@ def tar_outputs(scan_date, dictionary):
     print(outdir)
 
     for k, v in dictionary['paths']['pipeline_outpath'].items():
+        print(v)
 
         if not os.path.isdir(os.path.join(cwd, scan_date, outdir)):
             os.makedirs(os.path.join(cwd, scan_date, outdir))
