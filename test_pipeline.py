@@ -116,7 +116,7 @@ def run_plant_volume(scan_date, input_dir):
 def tar_outputs(scan_date, dictionary):
     
     cwd = os.getcwd()
-    outdir = '_'.join(dictionary['pipeline'], dictionary['description'])
+    outdir = '_'.join(dictionary['tags']['pipeline'], dictionary['tags']['description'])
     print(outdir)
 
     for k, v in dictionary['paths']['pipeline_outpath'].items():
