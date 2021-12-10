@@ -43,6 +43,12 @@ def get_args():
                         type=str,
                         required=True)
     
+    parser.add_argument('-np',
+                        '--n_plants',
+                        help='Number of plants to process (useful for dev) NOT IMPLEMENTED',
+                        type=int,
+                        required=False)
+    
     parser.add_argument('-m',
                         '--model',
                         help='Model weights to use for containers',
