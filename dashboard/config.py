@@ -28,6 +28,14 @@ class Config(object):
                             required=True,
         )
 
+        parser.add_argument('-np',
+                            '--n_plants_per_page',
+                            help='How many plants to display per page.',
+                            default=50,
+                            type=int,
+                            required=False,
+        )
+
         parser.add_argument('-t',
                             '--output_process_tag',
                             help='Which pipeline output to use (i.e. polynomial_cropping_dev)',

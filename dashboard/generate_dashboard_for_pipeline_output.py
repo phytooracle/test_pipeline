@@ -9,9 +9,22 @@ import re
 from operator import itemgetter
 import dashboard_html
 
+"""
+%run ~/work/repos/test_pipeline/dashboard/generate_dashboard_for_pipeline_output.py -d 2020-03-02 -t polynomial_cropping_dev
+"""
+
 #MIN_OBS = 5
 #BASE_URL = "https://data.cyverse.org/dav-anon/iplant/projects/phytooracle/season_10_lettuce_yr_2020/level_1/scanner3DTop/dashboard"
 #DO_BB_COMPARISON = False
+
+def divide_list_into_chunks(a, n):
+    """
+    From https://stackoverflow.com/questions/2130016/
+    a: list to be split
+    n: number of chunks
+    """
+    k, m = divmod(len(a), n)
+    return list((a[i*k+min(i, m):(i+1)*k+min(i+1, m)] for i in range(n)))
 
 if __name__ == "__main__":
 
@@ -21,178 +34,85 @@ if __name__ == "__main__":
     # Get a list of 3D plants for this date.
     ##########################################
 
-    breakpoint()
-    plant_dirs = glob.glob(os.path.join(conf.args.date, conf.args.output_process_tag),"*")
-    path = f"/iplant/home/shared/phytooracle/season_10_lettuce_yr_2020/level_1/scanner3DTop/dashboard/{conf.args.date}/plant_reports"
-    print(f"getting directory list from: {path}")
-    run_result = subprocess.run(["ils", path], stdout=subprocess.PIPE).stdout
-    ils_lines = run_result.decode('utf-8').splitlines()
-    print(f"   ... got {len(ils_lines)} lines from ils")
-    files_in_directory = [x.split("/")[-1] for x in ils_lines if "  C- " in x]
-    plant_dirs = [x for x in files_in_directory if re.search(r'.+_\d+$', x)]
-    print(f"   ... found {len(plant_dirs)} plant directories")
-
-    ######################
-    # Loop through plants 
-    ######################
-    # We're going to figure out what groups of good, double, and rarely observed plants
-    # we have for each genotype by looping through all of the plants and doing our
-    # bean counting in genotype_dict
-
-    genotype_dict = {}
-    all_valid_plants = []
-
-    data_counts = {
-            'good_data' : 0,
-            'low_observations' : 0,
-            'double_lettuce' : 0
-    }
-    for t in df.treatment.unique():
-        data_counts[t] = 0
-
-    for count, plant_id in enumerate(plant_dirs):
-        count += 1
-        print(f"({count}/{len(plant_dirs)}) : {plant_id}")
-        genotype = "_".join(plant_id.split("_")[:-1])
-
-        plant_data = df.loc[plant_id]   # fails if plant isn't in df.  We like that.
-
-        # additional sanity check
-        if plant_data.genotype != genotype:
-            raise Exception(f"Unexpected genotype: {plant_data.genotype} != {genotype}")
-
-        if plant_data.genotype not in genotype_dict.keys():
-            # We haven't seen this genotype yet, so initialize our dictionary.
-            genotype_dict[plant_data.genotype]                     = {}
-            genotype_dict[plant_data.genotype]['count']            = 0
-            genotype_dict[plant_data.genotype]['good_data']        = []
-            genotype_dict[plant_data.genotype]['low_observations'] = []
-            genotype_dict[plant_data.genotype]['double_lettuce']   = []
-
-        genotype_dict[plant_data.genotype]['count'] += 1
-        # Let's determine which bin this plant goes into...
-
-        if plant_data.double_lettuce:
-            genotype_dict[plant_data.genotype]['double_lettuce'].append(plant_data)
-            data_counts['double_lettuce'] += 1
-        elif (plant_data.n_obs < MIN_OBS):
-            genotype_dict[plant_data.genotype]['low_observations'].append(plant_data)
-            data_counts['low_observations'] += 1
-        else:
-            genotype_dict[plant_data.genotype]['good_data'].append(plant_data)
-            data_counts['good_data'] += 1
-
-        data_counts[plant_data.treatment] += 1
+    plant_dirs = glob.glob(os.path.join(conf.args.date, conf.args.output_process_tag, "plant_reports", "*"))
 
     ##################################################
-    #           Create and save HTML files           #
+    #        Determine how many pages we need
+    #
+    # We don't want 200 plants on one page, so we
+    # break it up into n plants per page.
     ##################################################
 
-    meta_html = f"""
-        <html>
-        <head>
-        <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
-        <link href="https://codepen.io/chriddyp/pen/bWLwgP.css" rel="stylesheet">
-        <body>
-        <h1>{conf.args.date}</h1>
-        <table>
-        <tr>
-        <td>
-            <ul>
-            <li>{len(plant_dirs)} Plants
-                 <ul>
-                 <li> Valid plants: {data_counts['good_data']}
-                 <li> Low number of observations: {data_counts['low_observations']}
-                 <li> Double lettuce: {data_counts['double_lettuce']}
-                 </ul>
-            <li>{len(genotype_dict.keys())} Genotypes
-            </ul>
-        <td>
-            <ul>
-    """
+    n_pages = -(-len(plant_dirs)//conf.args.n_plants_per_page)  # Round up.  3->3, 3.1->4
+    page_list = divide_list_into_chunks(plant_dirs, n_chunks)
 
-    for t in df.treatment.unique():
-        meta_html += f"<li>{t}: {data_counts[t]}"
+    nav_html = ""
+    for n in range(n_pages):
+        nav_html += f"<li><a href='index_{n}.html'>Page {n}</a>\n"
 
-    meta_html += f"""
-            </ul>
-        </td>
-        </tr>
-        </table>
-        </pre>
-        <a href="random.html">Some Random (Valid) Plants</a><br>
-        <a href="random2.html">Some More Random (Valid) Plants</a><br>
-        <a href="random3.html">Some Even More Random (Valid) Plants</a><br>
-        <a href="random4.html">Some Even More More Random (Valid) Plants</a><br>
-        <table>
-    """
+    #####################
+    # Loop through pages
+    #####################
 
-    # Make our cool alphabetical index...
-    for letter, genotypes in groupby(sorted(genotype_dict.keys()), key=itemgetter(0)):
-        print(letter)
+    for page_count, plant_dirs in enumerate(page_list):
 
-        meta_html += f"<hr><b>{letter}</b>\n"
+        print(f"Creating page {page_count} of {n_pages}")
+        
+        # note: indexPage is not a string, it is a class.
+        indexPage  = dashboard_html.GenericPage(f"index_{page_count}.html")
+        indexPage += f"""
+            <h1>{conf.args.date} : Page {page_count} of {n_pages}</h1>
+            <hr>
+            {nav_html}
+            <hr>
+        """
 
-        for g in genotypes:
-            all_valid_plants += genotype_dict[g]['good_data']
-            genotype_index_file = f"{g}.html"
-            meta_html += f"<li><a href='{genotype_index_file}'>{g}</a> ({genotype_dict[g]['count']} plants)\n"
+        ######################
+        # Loop through plants 
+        ######################
 
-            genotype_html = f"""
-                <html>
-                <body>
-                <h1>{g} : {conf.args.date}</h1>
-                <ul>
-            """
-            for category in ['good_data', 'double_lettuce', 'low_observations']:
-                genotype_html += f"<li>{data_category_strings[category]}: {len(genotype_dict[g][category])} plants"
+        for count, plant_path in enumerate(plant_dirs):
+            count += 1
+            print(f"({count}/{len(plant_dirs)})")
 
-            genotype_html += "</ul>"
-
-            for category in ['good_data', 'double_lettuce', 'low_observations']:
-
-                if len(genotype_dict[g]) == 0:
-                    continue
+        ##################################################
+        #           Create and save HTML files           #
+        ##################################################
 
 
-                genotype_html += f"""
-                    <h2><a id="{category}">{data_category_strings[category]} ({len(genotype_dict[g][category])} plants)</h2>
-                    <table>
-                """
 
-                genotype_html += f"<tr><th></th><th></th><th>Geocorection<th>Soil<br>Identification</th><th>Plant<br>Segmentation</th></tr>"
+        indexPage.save_page()
 
-
-                for plant_data in genotype_dict[g][category]:
-                    genotype_html += dashboard_html.plant_data_row(plant_data, BASE_URL, conf)
-
-                genotype_html += f"""
-                    </tr>
-                    </table>
-                """
-
-            genotype_html += f"""
-                </table>
-                <footnote>*{data_category_strings['low_observations']} plants are defined as plants with less than {MIN_OBS} RGB observations.</footnote>
-                </body>
-                </html>
-            """
-            with open(genotype_index_file, "w") as genotype_html_fh:
-                genotype_html_fh.write(genotype_html);
-
-meta_html += f"""
-    </table>
-	<hr>
-	<p><a href="../index.html">Dashboard Home</a></p>
-    <footnote>*{data_category_strings['low_observations']} plants are defined as plants with less than {MIN_OBS} RGB observations.</footnote>
-    </body>
-    </html>
-"""
-with open("index.html", "w") as meta_html_file:
-    meta_html_file.write(meta_html);
-
-
-dashboard_html.create_random_plants_page(all_valid_plants, conf, filename="random.html")
-dashboard_html.create_random_plants_page(all_valid_plants, conf, filename="random2.html")
-dashboard_html.create_random_plants_page(all_valid_plants, conf, filename="random3.html")
-dashboard_html.create_random_plants_page(all_valid_plants, conf, filename="random4.html")
+    
+#    genotype_html += dashboard_html.plant_data_row(plant_data, BASE_URL, conf)
+#
+#                genotype_html += f"""
+#                    </tr>
+#                    </table>
+#                """
+#
+#            genotype_html += f"""
+#                </table>
+#                <footnote>*{data_category_strings['low_observations']} plants are defined as plants with less than {MIN_OBS} RGB observations.</footnote>
+#                </body>
+#                </html>
+#            """
+#            with open(genotype_index_file, "w") as genotype_html_fh:
+#                genotype_html_fh.write(genotype_html);
+#
+#index_html += f"""
+#    </table>
+#	<hr>
+#	<p><a href="../index.html">Dashboard Home</a></p>
+#    <footnote>*{data_category_strings['low_observations']} plants are defined as plants with less than {MIN_OBS} RGB observations.</footnote>
+#    </body>
+#    </html>
+#"""
+#with open("index.html", "w") as index_html_file:
+#    index_html_file.write(index_html);
+#
+#
+#dashboard_html.create_random_plants_page(all_valid_plants, conf, filename="random.html")
+#dashboard_html.create_random_plants_page(all_valid_plants, conf, filename="random2.html")
+#dashboard_html.create_random_plants_page(all_valid_plants, conf, filename="random3.html")
+#dashboard_html.create_random_plants_page(all_valid_plants, conf, filename="random4.html")

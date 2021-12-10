@@ -20,11 +20,6 @@ def plant_data_row(plant_data, BASE_URL, conf):
     <td><a href='{BASE_URL}/{conf.args.date}/plant_reports/{plant_data.name}/index.html'><img style="max-width: 300; max-height: 300px" src='{BASE_URL}/{conf.args.date}/plant_reports/{plant_data.name}/combined_multiway_registered_soil_segmentation_cluster.gif'></a><input type="checkbox" name="segmentation" onchange="do_segmentation_checkbox()" /></td>
     """
 
-
-
-
-
-
 def create_random_plants_page(plants, conf, n=50, filename="random.html"):
 
     html = f"""
@@ -86,3 +81,43 @@ def create_random_plants_page(plants, conf, n=50, filename="random.html"):
 
     with open(filename, "w") as html_file:
         html_file.write(html);
+
+
+class GenericPage(object):
+
+    def __init__(self, save_path):
+        self.save_path = save_path
+        self.html_body = "<body>\n"
+
+    def footer(self):
+        return """
+            </body>
+            </html>
+        """
+
+    def header(self):
+        return """
+            <html>
+            <head>
+            <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+            <link href="https://codepen.io/chriddyp/pen/bWLwgP.css" rel="stylesheet">
+            </head>
+        """
+
+    def assemble_output(self):
+        output = ""
+        output += self.header()
+        output += self.html_body
+        output += self.footer()
+        return output
+
+    def __iadd__(self, html_to_add):
+        self.html_body += html_to_add
+        return self
+
+    #def __del__(self):
+        #pass
+
+    def save_page(self):
+        with open(self.save_path, "w") as output_file:
+            output_file.write(self.assemble_output());
