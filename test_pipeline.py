@@ -113,18 +113,22 @@ def run_plant_volume(scan_date, input_dir):
 
 
 # --------------------------------------------------
-def tar_outputs(scan_date, dir_path, tag, outdir):
+def tar_outputs(scan_date, dictionary):
     
     cwd = os.getcwd()
+    outdir = '_'.join(dictionary['pipeline'], dictionary['description'])
 
-    if not os.path.isdir(os.path.join(cwd, scan_date, outdir)):
-        os.makedirs(os.path.join(cwd, scan_date, outdir))
+    for k, v in dictionary['paths']['pipeline_outpath'].items():
+        print(k)
 
-        file_path = os.path.join(cwd, scan_date, outdir, f'{scan_date}_{d_type}_{tag}.tar') 
-        print(f'Creating {file_path}.')
-        if not os.path.isfile(file_path):
-            with tarfile.open(file_path, 'w') as tar:
-                tar.add(d_type, recursive=True)
+        # if not os.path.isdir(os.path.join(cwd, scan_date, outdir)):
+        #     os.makedirs(os.path.join(cwd, scan_date, outdir))
+
+        #     file_path = os.path.join(cwd, scan_date, outdir, f'{scan_date}_{d_type}_{tag}.tar') 
+        #     print(f'Creating {file_path}.')
+        #     if not os.path.isfile(file_path):
+        #         with tarfile.open(file_path, 'w') as tar:
+        #             tar.add(d_type, recursive=True)
 
     os.chdir(cwd)
 
