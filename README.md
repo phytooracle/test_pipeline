@@ -33,19 +33,18 @@ You can specify any number of modules. Each module runs a single container and g
 ## Running the pipeline
 The script ```test_pipeline.py``` is used to run the pipeline. This script downloads and extracts bundled test data, runs containers, and bundles output data.
 
-### Example commands
-#### Flags 
+### Flags 
 * -hpc --hpc | Download data using UA HPC data transfer node 
 * -d --date | Test date to process (see the "Supported test datasets" section below for supported dates)
 * -y --yaml | YAML file to use for processing 
   
-#### Supported test datasets
+### Supported test datasets
 The following scanner3DTop test datasets are currently supported: 
 * 2020-01-22
 * 2020-02-16
 * 2020-03-02
 
-#### HPC
+### Running on HPC cluster
 The pipeline can use a data transfer node to download data, which speeds up processing. You must first launch an interactive node using the following command on UA HPC Puma: 
 ```
 ./interactive_node.sh
@@ -55,7 +54,7 @@ Once the resources are allocated, run the following command to process data:
 ```
 ./test_pipeline.py -hpc -d 2020-01-22 -y yaml_files/travis_test_polynomial_cropping.yaml
 ```
-#### Local computer
+### Running on a local computer
 The pipeline can run on any Linux environment. Run the following command:
 To run the pipeline on a local computer, run the following command:
 ```
