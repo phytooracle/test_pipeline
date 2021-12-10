@@ -42,6 +42,13 @@ def get_args():
                         metavar='yaml',
                         type=str,
                         required=True)
+    
+    parser.add_argument('-m',
+                        '--model',
+                        help='Model weights to use for containers',
+                        metavar='model',
+                        type=str,
+                        default='/iplant/home/shared/phytooracle/season_10_lettuce_yr_2020/level_0/necessary_files/dgcnn_3d_model.pth')
 
     return parser.parse_args()
 
@@ -113,20 +120,22 @@ def run_plant_volume(scan_date, input_dir):
 
 
 # --------------------------------------------------
-def tar_outputs(scan_date, dir_path, tag, outdir):
+def tar_outputs(scan_date, dictionary):
     
     cwd = os.getcwd()
+    outdir = '_'.join([dictionary['tags']['pipeline'], dictionary['tags']['description']])
 
-    if not os.path.isdir(os.path.join(cwd, scan_date, outdir)):
-        os.makedirs(os.path.join(cwd, scan_date, outdir))
+    for k, v in dictionary['paths']['pipeline_outpath'].items():
 
-        file_path = os.path.join(cwd, scan_date, outdir, f'{scan_date}_{d_type}_{tag}.tar') 
+        if not os.path.isdir(os.path.join(cwd, scan_date, outdir)):
+            os.makedirs(os.path.join(cwd, scan_date, outdir))
+
+        file_path = os.path.join(cwd, scan_date, outdir, f'{scan_date}_{v}_plants.tar') 
         print(f'Creating {file_path}.')
         if not os.path.isfile(file_path):
             with tarfile.open(file_path, 'w') as tar:
-                tar.add(d_type, recursive=True)
+                tar.add(v, recursive=True)
 
-    os.chdir(cwd)
 
 
 # --------------------------------------------------
@@ -166,13 +175,15 @@ def main():
         # Download raw test dataset and GGCNN model weights.
         dir_name = download_raw_data(cyverse_path)
         global model_name
-        model_name = get_model_files('/iplant/home/shared/phytooracle/season_10_lettuce_yr_2020/level_0/necessary_files/dgcnn_3d_model.pth')
+        model_name = get_model_files(args.model)
 
         # Process each plant by running commands outlined in YAML file.
         plant_list = glob.glob(os.path.join(dir_name, '*'))
 
         with multiprocessing.Pool(multiprocessing.cpu_count()//4) as p:
             p.map(process_plant, plant_list)
+
+    tar_outputs(args.date, dictionary)
 
     # input_dir = ''.join([args.date, '_test_set'])
     # run_plant_volume(args.date, input_dir)
