@@ -10,12 +10,9 @@ from operator import itemgetter
 import dashboard_html
 
 """
+For Nathan using iPython locally...
 %run ~/work/repos/test_pipeline/dashboard/generate_dashboard_for_pipeline_output.py -d 2020-03-02 -t polynomial_cropping_dev
 """
-
-#MIN_OBS = 5
-#BASE_URL = "https://data.cyverse.org/dav-anon/iplant/projects/phytooracle/season_10_lettuce_yr_2020/level_1/scanner3DTop/dashboard"
-#DO_BB_COMPARISON = False
 
 def divide_list_into_chunks(a, n):
     """
@@ -29,12 +26,14 @@ def divide_list_into_chunks(a, n):
 if __name__ == "__main__":
 
     conf = Config() # This contains command line arguments, and phytooracle_data classes.
+    #dashboard_root = os.path.join(conf.args.date, conf.args.output_process_tag, "plant_reports")
+    dashboard_html.__root_path__ = os.path.join(conf.args.date, conf.args.output_process_tag, "plant_reports")
 
     ##########################################
     # Get a list of 3D plants for this date.
     ##########################################
 
-    plant_dirs = glob.glob(os.path.join(conf.args.date, conf.args.output_process_tag, "plant_reports", "*"))
+    plant_dirs = glob.glob(os.path.join(conf.args.date, conf.args.output_process_tag, "plant_reports", "*/"))
 
     ##################################################
     #        Determine how many pages we need
@@ -43,18 +42,19 @@ if __name__ == "__main__":
     # break it up into n plants per page.
     ##################################################
 
-    n_pages = -(-len(plant_dirs)//conf.args.n_plants_per_page)  # Round up.  3->3, 3.1->4
-    page_list = divide_list_into_chunks(plant_dirs, n_chunks)
+    n_pages = -(-len(plant_dirs)//conf.args.n_plants_per_page)  # Round up.  3.0->3, 3.1->4
+    page_list = divide_list_into_chunks(plant_dirs, n_pages)
 
-    nav_html = ""
+    nav_html = f"{len(plant_dirs)} plants have been divided into {n_pages}...<br>"
     for n in range(n_pages):
-        nav_html += f"<li><a href='index_{n}.html'>Page {n}</a>\n"
+        nav_html += f"<li><a href='index_{n+1}.html'>Page {n+1}</a>\n"
 
     #####################
     # Loop through pages
     #####################
 
     for page_count, plant_dirs in enumerate(page_list):
+        page_count += 1
 
         print(f"Creating page {page_count} of {n_pages}")
         
@@ -65,6 +65,7 @@ if __name__ == "__main__":
             <hr>
             {nav_html}
             <hr>
+            <table>
         """
 
         ######################
@@ -73,14 +74,12 @@ if __name__ == "__main__":
 
         for count, plant_path in enumerate(plant_dirs):
             count += 1
-            print(f"({count}/{len(plant_dirs)})")
+            plant_name = os.path.basename(plant_path[0:-1])
+            print(f"({count}/{len(plant_dirs)}) : {plant_name}")
 
-        ##################################################
-        #           Create and save HTML files           #
-        ##################################################
+            indexPage += dashboard_html.plant_data_row(plant_name)
 
-
-
+        indexPage += "</table>"
         indexPage.save_page()
 
     

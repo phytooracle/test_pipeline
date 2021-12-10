@@ -1,23 +1,21 @@
+import os
+import pdb
 import numpy as np
 
-def plant_data_row(plant_data, BASE_URL, conf):
+__root_path__ = "."
+
+def plant_data_row(plant_name):
 
     return f"""
     <tr>
     <td>
-        <a href='{BASE_URL}/{conf.args.date}/plant_reports/{plant_data.name}/index.html'>{plant_data.name}</a><br>
+        <a href='{plant_name}/index.html'>{plant_name}</a><br>
         <small>
-<pre>
-{plant_data[['treatment', 'n_obs', 'double_lettuce']]}
-<a href='http://www.google.com/maps/place/{plant_data['mean_lat']},{plant_data['mean_lon']}/@{plant_data['mean_lat']},{plant_data['mean_lon']},20z/data=!3m1!1e3'>{plant_data['mean_lat']},{plant_data['mean_lon']}</a>
-</pre>
+            <pre>
+            </pre>
         </small>
-        
     </td>
-    <td><a href='{BASE_URL}/{conf.args.date}/plant_reports/{plant_data.name}/index.html'><img style="max-width: 300; max-height: 300px" src='{BASE_URL}/{conf.args.date}/plant_reports/{plant_data.name}/combined_heatmap.png'></a></td>
-    <td><a href='{BASE_URL}/{conf.args.date}/plant_reports/{plant_data.name}/index.html'><img style="max-width: 300; max-height: 300px" src='{BASE_URL}/{conf.args.date}/plant_reports/{plant_data.name}/combined_multiway_registered.gif'></a><input type="checkbox" name="crop" onchange="do_crop_checkbox()"/></td>
-    <td><a href='{BASE_URL}/{conf.args.date}/plant_reports/{plant_data.name}/index.html'><img style="max-width: 300; max-height: 300px" src='{BASE_URL}/{conf.args.date}/plant_reports/{plant_data.name}/combined_multiway_registered_soil_segmentation.gif'></a><input type="checkbox" name="ground" onchange="do_ground_checkbox()" /></td>
-    <td><a href='{BASE_URL}/{conf.args.date}/plant_reports/{plant_data.name}/index.html'><img style="max-width: 300; max-height: 300px" src='{BASE_URL}/{conf.args.date}/plant_reports/{plant_data.name}/combined_multiway_registered_soil_segmentation_cluster.gif'></a><input type="checkbox" name="segmentation" onchange="do_segmentation_checkbox()" /></td>
+    <td><a href='{plant_name}/index.html'><img style="max-width: 300; max-height: 300px" src='{plant_name}/final.gif'></a></td>
     """
 
 def create_random_plants_page(plants, conf, n=50, filename="random.html"):
@@ -119,5 +117,5 @@ class GenericPage(object):
         #pass
 
     def save_page(self):
-        with open(self.save_path, "w") as output_file:
+        with open(os.path.join(__root_path__, self.save_path), "w") as output_file:
             output_file.write(self.assemble_output());
