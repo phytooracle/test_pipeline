@@ -46,7 +46,12 @@ The following scanner3DTop test datasets are currently supported:
 * 2020-03-02
 
 #### HPC
-The pipeline can use a data transfer node to download data, which speeds up processing. Run the following command:
+The pipeline can use a data transfer node to download data, which speeds up processing. You must first launch an interactive node using the following command on UA HPC Puma: 
+```
+./interactive_node.sh
+```
+
+Once the resources are allocated, run the following command to process data:
 ```
 ./test_pipeline.py -hpc -d 2020-01-22 -y yaml_files/travis_test_polynomial_cropping.yaml
 ```
