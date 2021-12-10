@@ -80,7 +80,7 @@ def download_raw_data(irods_path):
 
 # --------------------------------------------------
 def build_containers(dictionary):
-    """Get command-line arguments"""
+    """Build module containers outlined in YAML file"""
 
     for k, v in dictionary['modules'].items():
         container = v['container']
@@ -91,6 +91,7 @@ def build_containers(dictionary):
 
 # --------------------------------------------------
 def get_model_files(model_path):
+    """Download model weights from CyVerse DataStore"""
     
     if not os.path.isfile(os.path.basename(model_path)):
         cmd1 = f'iget -fKPVT {model_path}'
@@ -100,6 +101,7 @@ def get_model_files(model_path):
 
 # --------------------------------------------------
 def run_plant_volume(scan_date, input_dir):
+    """Run plant volume and TDA feature extraction on each individual plant point cloud"""
 
     if not os.path.isdir('3d_entropy_merge.simg'):
         print('Building 3d_entropy_merge.simg.')
@@ -109,7 +111,9 @@ def run_plant_volume(scan_date, input_dir):
         sp.call(f'singularity run 3d_entropy_merge.simg -d {scan_date} -ie {input_dir}', shell=True)
 
 
+# --------------------------------------------------
 def process_plant(plant):
+    """Process each input datum through the modules outlined in YAML file"""
 
     plant_name = os.path.basename(plant)
 
@@ -121,7 +125,7 @@ def process_plant(plant):
 
 # --------------------------------------------------
 def main():
-    """Make a jazz noise here"""
+    """Run processing here"""
 
     args = get_args()
 
@@ -145,7 +149,7 @@ def main():
         global model_name
         model_name = get_model_files('/iplant/home/shared/phytooracle/season_10_lettuce_yr_2020/level_0/necessary_files/dgcnn_3d_model.pth')
 
-        # Iterate through each plant and run commands outlined in YAML file.
+        # Process each plant by running commands outlined in YAML file.
         plant_list = glob.glob(os.path.join(dir_name, '*'))
 
         with multiprocessing.Pool(multiprocessing.cpu_count()//4) as p:
