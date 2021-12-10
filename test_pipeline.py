@@ -31,10 +31,10 @@ def get_args():
 
     parser.add_argument('-d',
                         '--date',
-                        help='Scan date to process.',
+                        help='Scan date to process. (psst, try: 2020-01-22, 2020-02-16 or 2020-03-02)',
                         metavar='scan_date',
                         type=str,
-                        required=False)
+                        required=True)
 
     parser.add_argument('-y',
                         '--yaml',
@@ -146,6 +146,7 @@ def main():
     """Run processing here"""
 
     args = get_args()
+
 
     with open(args.yaml, 'r') as stream:
         try:
