@@ -144,7 +144,6 @@ def tar_outputs(scan_date, dictionary):
         shutil.move(v, os.path.join(scan_date, outdir))
 
 
-
 # --------------------------------------------------
 def process_plant(plant):
     """Process each input datum through the modules outlined in YAML file"""
