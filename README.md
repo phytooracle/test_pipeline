@@ -1,4 +1,4 @@
-# Test Pipeline
+# PhytoOracle Test Pipeline
 This is a test pipeline for scanner3DTop (point cloud) data. The pipeline can be run on local or HPC resources, so long as Singularity is installed. 
 
 ## YAML file 
