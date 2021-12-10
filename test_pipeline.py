@@ -42,6 +42,13 @@ def get_args():
                         metavar='yaml',
                         type=str,
                         required=True)
+    
+    parser.add_argument('-m',
+                        '--model',
+                        help='Model weights to use for containers',
+                        metavar='model',
+                        type=str,
+                        default='/iplant/home/shared/phytooracle/season_10_lettuce_yr_2020/level_0/necessary_files/dgcnn_3d_model.pth')
 
     return parser.parse_args()
 
@@ -167,7 +174,7 @@ def main():
         # Download raw test dataset and GGCNN model weights.
         dir_name = download_raw_data(cyverse_path)
         global model_name
-        model_name = get_model_files('/iplant/home/shared/phytooracle/season_10_lettuce_yr_2020/level_0/necessary_files/dgcnn_3d_model.pth')
+        model_name = get_model_files(args.model)
 
         # Process each plant by running commands outlined in YAML file.
         plant_list = glob.glob(os.path.join(dir_name, '*'))
