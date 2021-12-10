@@ -141,7 +141,7 @@ def tar_outputs(scan_date, dictionary):
         if not os.path.isfile(file_path):
             with tarfile.open(file_path, 'w') as tar:
                 tar.add(v, recursive=True)
-
+        shutil.move(v, os.path.join(scan_date, outdir))
 
 
 # --------------------------------------------------
