@@ -8,6 +8,7 @@ Purpose: Test pipeline automation
 import argparse
 import os
 import sys 
+import pdb
 import subprocess as sp
 import yaml
 import glob
@@ -184,7 +185,11 @@ def main():
         model_name = get_model_files(args.model)
 
         # Process each plant by running commands outlined in YAML file.
-        plant_list = glob.glob(os.path.join(dir_name, '*'))
+        full_plant_list = glob.glob(os.path.join(dir_name, '*'))
+        if args.n_plants is not None:
+            plant_list = full_plant_list[:args.n_plants]
+        else:
+            plant_list = full_plant_list
 
         with multiprocessing.Pool(multiprocessing.cpu_count()//4) as p:
             p.map(process_plant, plant_list)
