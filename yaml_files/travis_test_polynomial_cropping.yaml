@@ -12,11 +12,11 @@ modules:
     command: singularity run -B $(pwd):/mnt --pwd /mnt polynomial_surface_fitting_s10.simg -p ${PLANT_PATH} -c -po segmentation_pointclouds -fo plant_reports
 
 
-  # 2:
-  #   container: 
-  #     simg_name: 3d_neighbor_removal.simg
-  #     dockerhub_path: docker://phytooracle/3d_neighbor_removal:latest
-  #   command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_neighbor_removal.simg -i ${PLANT_PATH} -e 0.03
+  2:
+    container: 
+      simg_name: dgcnn_single_plant_soil_segmentation_pipeline.simg
+      dockerhub_path: docker://phytooracle/dgcnn_single_plant_soil_segmentation_pipeline:latest
+    command: singularity run -B $(pwd):/mnt --pwd /mnt dgcnn_single_plant_soil_segmentation_pipeline.simg -p ${PLANT_PATH} --model_path {MODEL_PATH} -po segmentation_pointclouds -fo plant_reports -ef poly_crop 
 
   
   # 3:
