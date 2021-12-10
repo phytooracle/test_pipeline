@@ -8,6 +8,7 @@ Purpose: Test pipeline automation
 import argparse
 import os
 import sys 
+import pdb
 import subprocess as sp
 import yaml
 import glob
@@ -42,6 +43,12 @@ def get_args():
                         metavar='yaml',
                         type=str,
                         required=True)
+    
+    parser.add_argument('-np',
+                        '--n_plants',
+                        help='Number of plants to process (useful for dev) NOT IMPLEMENTED',
+                        type=int,
+                        required=False)
     
     parser.add_argument('-m',
                         '--model',
@@ -135,7 +142,7 @@ def tar_outputs(scan_date, dictionary):
         if not os.path.isfile(file_path):
             with tarfile.open(file_path, 'w') as tar:
                 tar.add(v, recursive=True)
-
+        shutil.move(v, os.path.join(scan_date, outdir))
 
 
 # --------------------------------------------------
@@ -178,7 +185,11 @@ def main():
         model_name = get_model_files(args.model)
 
         # Process each plant by running commands outlined in YAML file.
-        plant_list = glob.glob(os.path.join(dir_name, '*'))
+        full_plant_list = glob.glob(os.path.join(dir_name, '*'))
+        if args.n_plants is not None:
+            plant_list = full_plant_list[:args.n_plants]
+        else:
+            plant_list = full_plant_list
 
         with multiprocessing.Pool(multiprocessing.cpu_count()//4) as p:
             p.map(process_plant, plant_list)
