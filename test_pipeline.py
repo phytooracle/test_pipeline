@@ -117,6 +117,7 @@ def tar_outputs(scan_date, dictionary):
     
     cwd = os.getcwd()
     outdir = '_'.join(dictionary['pipeline'], dictionary['description'])
+    print(outdir)
 
     for k, v in dictionary['paths']['pipeline_outpath'].items():
         print(k)
@@ -174,8 +175,10 @@ def main():
         # Process each plant by running commands outlined in YAML file.
         plant_list = glob.glob(os.path.join(dir_name, '*'))
 
-        with multiprocessing.Pool(multiprocessing.cpu_count()//4) as p:
-            p.map(process_plant, plant_list)
+        # with multiprocessing.Pool(multiprocessing.cpu_count()//4) as p:
+        #     p.map(process_plant, plant_list)
+
+    tar_outputs(args.date, dictionary)
 
     # input_dir = ''.join([args.date, '_test_set'])
     # run_plant_volume(args.date, input_dir)
