@@ -125,6 +125,23 @@ def run_plant_volume(scan_date, input_dir):
     if not os.path.isfile(os.path.join(scan_date, f'{scan_date}_tda.csv')):
         sp.call(f'singularity run 3d_entropy_merge.simg -d {scan_date} -ie {input_dir}', shell=True)
 
+# --------------------------------------------------
+def output_process_tag(dictionary):
+    return '_'.join([dictionary['tags']['pipeline'], dictionary['tags']['description']])
+
+# --------------------------------------------------
+def save_yaml(yaml_file_path, relative_save_dir):
+    """
+    yaml_file_path:     the absolute path to the yaml file you want copied into relative_save_dir
+    relative_save_dir:  date/output_process_tag
+
+    The copied yaml file is renamed to config.yaml so that each output has the same file names,
+    which makes it easier for dashboard processing.
+    """
+    
+    yaml_save_path = os.path.join(os.getcwd(), relative_save_dir, "config.yaml")
+    shutil.copy(yaml_file_path, yaml_save_path)
+
 
 # --------------------------------------------------
 def tar_outputs(scan_date, dictionary):
@@ -195,6 +212,7 @@ def main():
             p.map(process_plant, plant_list)
 
     tar_outputs(args.date, dictionary)
+    save_yaml(args.yaml, os.path.join(args.date,  output_process_tag(dictionary)))
 
     # input_dir = ''.join([args.date, '_test_set'])
     # run_plant_volume(args.date, input_dir)
