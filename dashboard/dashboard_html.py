@@ -9,14 +9,22 @@ def plant_data_row(plant_name):
     return f"""
     <tr>
     <td>
-        <a href='{plant_name}/index.html'>{plant_name}</a><br>
-        <small>
-            <pre>
-            </pre>
-        </small>
+        {plant_name}<br>
     </td>
-    <td><a href='{plant_name}/index.html'><img style="max-width: 300; max-height: 300px" src='{plant_name}/final.gif'></a></td>
+    <td>
+        <a href="{plant_name}/poly_crop-before_after.jpg"><img style="max-width: 300; max-height: 300px" src='{plant_name}/poly_crop-before_after.jpg'></a>
+    </td>
+    <td>
+        <a href="{plant_name}/poly_crop-fitting.jpg"><img style="max-width: 300; max-height: 300px" src='{plant_name}/poly_crop-fitting.jpg'></a>
+    </td>
+    <td>
+        <a href="{plant_name}/soil_segmentation.gif"><img style="max-width: 300; max-height: 300px" src='{plant_name}/soil_segmentation.gif'></a>
+    </td>
+    <td>
+        <a href="{plant_name}/final.gif"><img style="max-width: 300; max-height: 300px" src='{plant_name}/final.gif'></a>
+    </td>
     """
+
 
 def create_random_plants_page(plants, conf, n=50, filename="random.html"):
 

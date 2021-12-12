@@ -45,7 +45,7 @@ if __name__ == "__main__":
     n_pages = -(-len(plant_dirs)//conf.args.n_plants_per_page)  # Round up.  3.0->3, 3.1->4
     page_list = divide_list_into_chunks(plant_dirs, n_pages)
 
-    nav_html = f"{len(plant_dirs)} plants have been divided into {n_pages}...<br>"
+    nav_html = f"{len(plant_dirs)} plants have been divided into {n_pages} page/s...<br>"
     for n in range(n_pages):
         nav_html += f"<li><a href='index_{n+1}.html'>Page {n+1}</a>\n"
 
