@@ -60,3 +60,16 @@ To run the pipeline on a local computer, run the following command:
 ```
 ./test_pipeline.py -d 2020-01-22 -y yaml_files/travis_test_polynomial_cropping.yaml
 ```
+
+## Dashboard generator
+
+From the same directory you ran `test_pipeline.py` do something like this...
+```
+generate_dashboard_for_pipeline_output.py -d 2020-03-02 -t polynomial_cropping_dev
+```
+
+It will output `index_1.html` in the `2020-03-02/polynomial_cropping_dev/plant_reports` directory...
+
+```
+firefox 2020-03-02/polynomial_cropping_dev/plant_reports/index_1.html
+```
