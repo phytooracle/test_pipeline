@@ -25,6 +25,13 @@ modules:
       dockerhub_path: docker://phytooracle/3d_neighbor_removal:latest
     command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_neighbor_removal.simg -plant ${PLANT_NAME} -e 0.01 -pod segmentation_pointclouds -fod plant_reports
   
+  4:
+    container: 
+      simg_name: 3d_segmentation_dashboard_assets.simg
+      dockerhub_path: docker://phytooracle/3d_segmentation_dashboard_assets:latest
+    command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_segmentation_dashboard_assets.simg -i ${PLANT_PATH} -plant ${PLANT_NAME} -pod segmentation_pointclouds -fod plant_reports
+    output_dir: individual_plants_out #/segmentation_pointclouds
+  
 
 paths:
   pipeline_outpath:
