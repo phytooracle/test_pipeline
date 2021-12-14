@@ -149,11 +149,13 @@ def tar_outputs(scan_date, dictionary):
     cwd = os.getcwd()
     outdir = '_'.join([dictionary['tags']['pipeline'], dictionary['tags']['description']])
 
+    if os.path.isdir(os.path.join(cwd, scan_date, outdir)):
+        shutil.rmtree(os.path.join(cwd, scan_date, outdir))
+
     for k, v in dictionary['paths']['pipeline_outpath'].items():
 
-        if os.path.isdir(os.path.join(cwd, scan_date, outdir)):
-            shutil.rmtree(os.path.join(cwd, scan_date, outdir))
-        os.makedirs(os.path.join(cwd, scan_date, outdir))
+        if not os.path.isdir(os.path.join(cwd, scan_date, outdir)):
+            os.makedirs(os.path.join(cwd, scan_date, outdir))
 
         file_path = os.path.join(cwd, scan_date, outdir, f'{scan_date}_{v}_plants.tar') 
         print(f'Creating {file_path}.')
