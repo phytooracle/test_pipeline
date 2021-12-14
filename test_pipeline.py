@@ -150,7 +150,7 @@ def tar_outputs(scan_date, dictionary):
     outdir = '_'.join([dictionary['tags']['pipeline'], dictionary['tags']['description']])
 
     if os.path.isdir(os.path.join(cwd, scan_date, outdir)):
-            shutil.rmtree(os.path.join(cwd, scan_date, outdir))
+        shutil.rmtree(os.path.join(cwd, scan_date, outdir))
 
     for k, v in dictionary['paths']['pipeline_outpath'].items():
 
