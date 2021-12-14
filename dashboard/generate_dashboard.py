@@ -3,7 +3,6 @@ from itertools import groupby
 from operator import itemgetter
 import pandas as pd
 import numpy as np
-import subprocess
 from config import Config
 import re
 from operator import itemgetter
@@ -54,7 +53,7 @@ def make_output_process_tag_pages(tag_path):
         print(f"Creating page {page_count} of {n_pages}")
         
         # note: tagPage is not a string, it is a class.
-        tagPage  = dashboard_html.GenericPage(f"{tag_path}plant_reports/index_{page_count}.html",
+        tagPage  = dashboard_html.OutputTagPage(f"{tag_path}plant_reports/index_{page_count}.html",
                                                 name=tag_path)
         tagPage += f"""
             <h2>Page {page_count} of {n_pages}</h2>
@@ -106,11 +105,13 @@ if __name__ == "__main__":
             # dummyIndextagPage is wierd.  We only make it to get the path to pass
             # to metaPage.  The real tag pages get created in make_output_process_tag_pages
             # a hack because I coded myself into a corner, and dont care at the moment. [NPH]
-            dummyIndextagPage = dashboard_html.GenericPage(
+            dummyTagPage = dashboard_html.GenericPage(
                                                   os.path.join(tag_path, f"plant_reports/index_1.html"),
                                                   name = tag_path,
             )
-            metaPage.add_link(dummyIndextagPage)
+            metaPage.add_link(dummyTagPage)
+            n_plants = len(filesystem_functions.get_plants_in_dir(tag_path))
+            metaPage += f"({n_plants} plants processed)"
             make_output_process_tag_pages(tag_path)
 
 
