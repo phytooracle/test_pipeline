@@ -8,32 +8,25 @@ from config import Config
 import re
 from operator import itemgetter
 import dashboard_html
+import filesystem_functions
 
 """
 For Nathan using iPython locally...
-%run ~/work/repos/test_pipeline/dashboard/generate_dashboard_for_pipeline_output.py -d 2020-03-02 -t polynomial_cropping_dev
+%run ~/work/repos/test_pipeline/dashboard/generate_dashboard
 """
 
-def divide_list_into_chunks(a, n):
-    """
-    From https://stackoverflow.com/questions/2130016/
-    a: list to be split
-    n: number of chunks
-    """
-    k, m = divmod(len(a), n)
-    return list((a[i*k+min(i, m):(i+1)*k+min(i+1, m)] for i in range(n)))
+N_PLANTS_PER_PAGE = 50
 
-if __name__ == "__main__":
+def create_dict_of_lists_from_list(the_list):
+    return_dict = {}
+    for l in the_list:
+        return_dict[l] = []
+    return return_dict
 
-    conf = Config() # This contains command line arguments, and phytooracle_data classes.
-    #dashboard_root = os.path.join(conf.args.date, conf.args.output_process_tag, "plant_reports")
-    dashboard_html.__root_path__ = os.path.join(conf.args.date, conf.args.output_process_tag, "plant_reports")
+def make_output_process_tag_pages(tag_path):
 
-    ##########################################
-    # Get a list of 3D plants for this date.
-    ##########################################
-
-    plant_dirs = glob.glob(os.path.join(conf.args.date, conf.args.output_process_tag, "plant_reports", "*/"))
+    date_tag_plants = filesystem_functions.get_plants_in_dir(tag_path)
+    tag_name = filesystem_functions.convert_paths_to_names([tag_path])[0]
 
     ##################################################
     #        Determine how many pages we need
@@ -42,8 +35,10 @@ if __name__ == "__main__":
     # break it up into n plants per page.
     ##################################################
 
-    n_pages = -(-len(plant_dirs)//conf.args.n_plants_per_page)  # Round up.  3.0->3, 3.1->4
-    page_list = divide_list_into_chunks(plant_dirs, n_pages)
+    plant_dirs = date_tag_plants
+
+    n_pages = -(-len(plant_dirs)//N_PLANTS_PER_PAGE)  # Round up.  3.0->3, 3.1->4
+    page_list = dashboard_html.divide_list_into_chunks(plant_dirs, n_pages)
 
     nav_html = f"{len(plant_dirs)} plants have been divided into {n_pages} page/s...<br>"
     for n in range(n_pages):
@@ -58,10 +53,11 @@ if __name__ == "__main__":
 
         print(f"Creating page {page_count} of {n_pages}")
         
-        # note: indexPage is not a string, it is a class.
-        indexPage  = dashboard_html.GenericPage(f"index_{page_count}.html")
-        indexPage += f"""
-            <h1>{conf.args.date} : Page {page_count} of {n_pages}</h1>
+        # note: tagPage is not a string, it is a class.
+        tagPage  = dashboard_html.GenericPage(f"{tag_path}plant_reports/index_{page_count}.html",
+                                                name=tag_path)
+        tagPage += f"""
+            <h2>Page {page_count} of {n_pages}</h2>
             <hr>
             {nav_html}
             <hr>
@@ -72,46 +68,135 @@ if __name__ == "__main__":
         # Loop through plants 
         ######################
 
-        for count, plant_path in enumerate(plant_dirs):
+        for count, plant_name in enumerate(plant_dirs):
             count += 1
-            plant_name = os.path.basename(plant_path[0:-1])
             print(f"({count}/{len(plant_dirs)}) : {plant_name}")
 
-            indexPage += dashboard_html.plant_data_row(plant_name)
+            tagPage += dashboard_html.plant_data_row(plant_name)
+        tagPage += dashboard_html.plant_data_row_bottom()
 
-        indexPage += "</table>"
-        indexPage.save_page()
+        tagPage += "</table>"
+        tagPage.save_page()
+
+
+
+if __name__ == "__main__":
+
+    #dashboard_root = os.path.join(conf.args.date, conf.args.output_process_tag, "plant_reports")
+    dashboard_html.__root_path__ = "."
+
+    page_tree_dict  = {}
+
+    all_dates  = filesystem_functions.get_all_dates()
+    all_tags   = filesystem_functions.get_all_tags()
+    all_plants = filesystem_functions.get_all_plants()
+
+    dates_dict  = create_dict_of_lists_from_list(all_dates)
+    tags_dict   = create_dict_of_lists_from_list(all_tags)
+    plants_dict = create_dict_of_lists_from_list(all_plants)
 
     
-#    genotype_html += dashboard_html.plant_data_row(plant_data, BASE_URL, conf)
+    metaPage = dashboard_html.GenericPage("index.html", name="Dashboard Home")
+    for date in all_dates:
+        print(f"{date}")
+        metaPage += f"<h2>{date}</h2>\n"
+        datePage = dashboard_html.GenericPage(os.path.join(date, f"index.html"))
+        date_tags = filesystem_functions.get_tag_paths(date)
+        for tag_path in date_tags:
+            # dummyIndextagPage is wierd.  We only make it to get the path to pass
+            # to metaPage.  The real tag pages get created in make_output_process_tag_pages
+            # a hack because I coded myself into a corner, and dont care at the moment. [NPH]
+            dummyIndextagPage = dashboard_html.GenericPage(
+                                                  os.path.join(tag_path, f"plant_reports/index_1.html"),
+                                                  name = tag_path,
+            )
+            metaPage.add_link(dummyIndextagPage)
+            make_output_process_tag_pages(tag_path)
+
+
+        # note: GenericPage() is a class, not a string, it is a class, so
+        #       don't be fooled by the += applied to it.
+        datePage.save_page()
+
+    metaPage.save_page()
+    
+#    ##################################################
+#    #        Determine how many pages we need
+#    #
+#    # We don't want 200 plants on one page, so we
+#    # break it up into n plants per page.
+#    ##################################################
 #
-#                genotype_html += f"""
-#                    </tr>
-#                    </table>
-#                """
+#    n_pages = -(-len(plant_dirs)//conf.args.n_plants_per_page)  # Round up.  3.0->3, 3.1->4
+#    page_list = divide_list_into_chunks(plant_dirs, n_pages)
 #
-#            genotype_html += f"""
-#                </table>
-#                <footnote>*{data_category_strings['low_observations']} plants are defined as plants with less than {MIN_OBS} RGB observations.</footnote>
-#                </body>
-#                </html>
-#            """
-#            with open(genotype_index_file, "w") as genotype_html_fh:
-#                genotype_html_fh.write(genotype_html);
+#    nav_html = f"{len(plant_dirs)} plants have been divided into {n_pages} page/s...<br>"
+#    for n in range(n_pages):
+#        nav_html += f"<li><a href='index_{n+1}.html'>Page {n+1}</a>\n"
 #
-#index_html += f"""
-#    </table>
-#	<hr>
-#	<p><a href="../index.html">Dashboard Home</a></p>
-#    <footnote>*{data_category_strings['low_observations']} plants are defined as plants with less than {MIN_OBS} RGB observations.</footnote>
-#    </body>
-#    </html>
-#"""
-#with open("index.html", "w") as index_html_file:
-#    index_html_file.write(index_html);
+#    #####################
+#    # Loop through pages
+#    #####################
 #
+#    for page_count, plant_dirs in enumerate(page_list):
+#        page_count += 1
 #
-#dashboard_html.create_random_plants_page(all_valid_plants, conf, filename="random.html")
-#dashboard_html.create_random_plants_page(all_valid_plants, conf, filename="random2.html")
-#dashboard_html.create_random_plants_page(all_valid_plants, conf, filename="random3.html")
-#dashboard_html.create_random_plants_page(all_valid_plants, conf, filename="random4.html")
+#        print(f"Creating page {page_count} of {n_pages}")
+#        
+#        # note: indexPage is not a string, it is a class.
+#        indexPage  = dashboard_html.GenericPage(f"index_{page_count}.html")
+#        indexPage += f"""
+#            <h1>{conf.args.date} : Page {page_count} of {n_pages}</h1>
+#            <hr>
+#            {nav_html}
+#            <hr>
+#            <table>
+#        """
+#
+#        ######################
+#        # Loop through plants 
+#        ######################
+#
+#        for count, plant_path in enumerate(plant_dirs):
+#            count += 1
+#            plant_name = os.path.basename(plant_path[0:-1])
+#            print(f"({count}/{len(plant_dirs)}) : {plant_name}")
+#
+#            indexPage += dashboard_html.plant_data_row(plant_name)
+#
+#        indexPage += "</table>"
+#        indexPage.save_page()
+#
+#    
+##    genotype_html += dashboard_html.plant_data_row(plant_data, BASE_URL, conf)
+##
+##                genotype_html += f"""
+##                    </tr>
+##                    </table>
+##                """
+##
+##            genotype_html += f"""
+##                </table>
+##                <footnote>*{data_category_strings['low_observations']} plants are defined as plants with less than {MIN_OBS} RGB observations.</footnote>
+##                </body>
+##                </html>
+##            """
+##            with open(genotype_index_file, "w") as genotype_html_fh:
+##                genotype_html_fh.write(genotype_html);
+##
+##index_html += f"""
+##    </table>
+##	<hr>
+##	<p><a href="../index.html">Dashboard Home</a></p>
+##    <footnote>*{data_category_strings['low_observations']} plants are defined as plants with less than {MIN_OBS} RGB observations.</footnote>
+##    </body>
+##    </html>
+##"""
+##with open("index.html", "w") as index_html_file:
+##    index_html_file.write(index_html);
+##
+##
+##dashboard_html.create_random_plants_page(all_valid_plants, conf, filename="random.html")
+##dashboard_html.create_random_plants_page(all_valid_plants, conf, filename="random2.html")
+##dashboard_html.create_random_plants_page(all_valid_plants, conf, filename="random3.html")
+##dashboard_html.create_random_plants_page(all_valid_plants, conf, filename="random4.html")

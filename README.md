@@ -63,6 +63,18 @@ To run the pipeline on a local computer, run the following command:
 
 ## Dashboard generator
 
+### NEW Dasboard (generate_dashboard.py)
+
+This script will will find every pipeline 'run' (date and output_process_tag combinarions) and create pages for everything.  
+
+From the same directory you ran `test_pipeline.py` do something like this...
+```
+python generate_dashboard.py
+```
+
+
+### OLD Dashboard
+
 From the same directory you ran `test_pipeline.py` do something like this...
 ```
 generate_dashboard_for_pipeline_output.py -d 2020-03-02 -t polynomial_cropping_dev

@@ -26,7 +26,6 @@ def divide_list_into_chunks(a, n):
 if __name__ == "__main__":
 
     conf = Config() # This contains command line arguments, and phytooracle_data classes.
-    #dashboard_root = os.path.join(conf.args.date, conf.args.output_process_tag, "plant_reports")
     dashboard_html.__root_path__ = os.path.join(conf.args.date, conf.args.output_process_tag, "plant_reports")
 
     ##########################################
