@@ -105,11 +105,13 @@ if __name__ == "__main__":
             # dummyIndextagPage is wierd.  We only make it to get the path to pass
             # to metaPage.  The real tag pages get created in make_output_process_tag_pages
             # a hack because I coded myself into a corner, and dont care at the moment. [NPH]
-            dummyIndextagPage = dashboard_html.GenericPage(
+            dummyTagPage = dashboard_html.GenericPage(
                                                   os.path.join(tag_path, f"plant_reports/index_1.html"),
                                                   name = tag_path,
             )
-            metaPage.add_link(dummyIndextagPage)
+            metaPage.add_link(dummyTagPage)
+            n_plants = len(filesystem_functions.get_plants_in_dir(tag_path))
+            metaPage += f"({n_plants} plants processed)"
             make_output_process_tag_pages(tag_path)
 
 

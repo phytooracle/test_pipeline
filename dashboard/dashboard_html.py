@@ -2,6 +2,8 @@ import os
 import pdb
 import yaml
 import numpy as np
+import filesystem_functions
+import pprint
 
 __root_path__ = "."
 
@@ -129,22 +131,55 @@ class OutputTagPage(GenericPage):
 
     def do_setup(self):
         self.import_yaml()
+        self.date = self.name.split("/")[0]
 
     def header(self):
+        foo = self.make_compare_with_links()
         return f"""
             <html>
             <head>
             <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
             <link href="https://codepen.io/chriddyp/pen/bWLwgP.css" rel="stylesheet">
             </head>
+            <a href="../../../index.html">Dashboard Home</a><br>
             <h1>{self.name}</h1>
             <hr>
-            <a href="../../../">Home</a><br>
-            <small>
-                <pre>{self.yaml_dict['tags']}</pre>
-                <a href="../config.yaml">The YAML File!</a>
-            </small>
+            <table>
+            <tr>
+            <td>
+                <small>
+                    <a href="../config.yaml">The YAML File!...</a><br>
+                    <pre>{pprint.pformat(self.yaml_dict['tags'])}</pre>
+                </small>
+            </td>
+            <!--
+            <td>
+                <b>Other {self.date} runs:</b><br>
+                {foo}
+            </td>
+            -->
+            </tr>
+            </table>
+        """
+
+    def make_compare_with_links(self):
+        all_tag_paths = filesystem_functions.get_tag_paths(self.date)
+        filtered_tag_paths = [x for x in all_tag_paths if x != self.name]
+        return_html = ""
+        for t in filtered_tag_paths:
+            return_html += f"<li><a href='/{self.date}/{t}/plant_reports/index_1.html'>{t}</a>\n"
+        return return_html
+        
+
+    def footer(self):
+        return f"""
             <hr>
+            <small>
+            Full Yaml File:<p>
+            <pre>{pprint.pformat(self.yaml_dict)}</pre>
+            </small>
+            </body>
+            </html>
         """
 
 
