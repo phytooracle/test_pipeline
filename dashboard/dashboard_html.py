@@ -1,5 +1,6 @@
 import os
 import pdb
+import yaml
 import numpy as np
 
 __root_path__ = "."
@@ -73,13 +74,16 @@ def plant_data_row_bottom():
     with open(filename, "w") as html_file:
         html_file.write(html);
 
-
 class GenericPage(object):
 
     def __init__(self, save_path, name="Un-named"):
         self.path = self.save_path = save_path
         self.html_body = "<body>\n"
         self.name = name
+        self.do_setup()
+
+    def do_setup(self):
+        pass
 
     def footer(self):
         return """
@@ -119,3 +123,36 @@ class GenericPage(object):
         print(f"Saving HTML: {output_path}")
         with open(output_path, "w") as output_file:
             output_file.write(self.assemble_output());
+
+
+class OutputTagPage(GenericPage):
+
+    def do_setup(self):
+        self.import_yaml()
+
+    def header(self):
+        return f"""
+            <html>
+            <head>
+            <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+            <link href="https://codepen.io/chriddyp/pen/bWLwgP.css" rel="stylesheet">
+            </head>
+            <h1>{self.name}</h1>
+            <hr>
+            <a href="../../../">Home</a><br>
+            <small>
+                <pre>{self.yaml_dict['tags']}</pre>
+                <a href="../config.yaml">The YAML File!</a>
+            </small>
+            <hr>
+        """
+
+
+    def import_yaml(self):
+
+        with open(os.path.join(self.name,"config.yaml"), 'r') as stream:
+            try:
+                self.yaml_dict = yaml.safe_load(stream)
+            except yaml.YAMLError as exc:
+                print(exc)
+

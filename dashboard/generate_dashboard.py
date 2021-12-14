@@ -3,7 +3,6 @@ from itertools import groupby
 from operator import itemgetter
 import pandas as pd
 import numpy as np
-import subprocess
 from config import Config
 import re
 from operator import itemgetter
@@ -54,7 +53,7 @@ def make_output_process_tag_pages(tag_path):
         print(f"Creating page {page_count} of {n_pages}")
         
         # note: tagPage is not a string, it is a class.
-        tagPage  = dashboard_html.GenericPage(f"{tag_path}plant_reports/index_{page_count}.html",
+        tagPage  = dashboard_html.OutputTagPage(f"{tag_path}plant_reports/index_{page_count}.html",
                                                 name=tag_path)
         tagPage += f"""
             <h2>Page {page_count} of {n_pages}</h2>
