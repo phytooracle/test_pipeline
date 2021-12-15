@@ -22,7 +22,7 @@ def comparison_row(plant_name, tags, color):
     return_html += f"""
     <tr>
     <td bgcolor={color}>
-        <a href="{plant_name}/">{plant_name}</a><br>
+        <p style="color:white;">{plant_name}</p>
     </td>
     <td>
     """
@@ -33,7 +33,7 @@ def comparison_row(plant_name, tags, color):
         <table>
         <tr>
         <td>
-            {tag}
+            {"<br>".join(tag.split("_"))}
         </td>
         <td>
             <a href="{tag}/plant_reports/{plant_name}/level_1_plant_clip.gif"><img style="max-width: 300; max-height: 300px" src='{tag}/plant_reports/{plant_name}/level_1_plant_clip.gif'></a>
@@ -72,9 +72,6 @@ def plant_data_row(plant_name):
     <td>
         <a href="{plant_name}/final.gif"><img style="max-width: 300; max-height: 300px" src='{plant_name}/final.gif'></a>
         <input type="checkbox" name="segmentation" onchange="do_segmentation_checkbox()" />
-    </td>
-    <td>
-        <a href="{plant_name}/poly_crop-fitting.jpg"><img style="max-width: 300; max-height: 300px" src='{plant_name}/poly_crop-fitting.jpg'></a>
     </td>
     """
 
@@ -219,7 +216,7 @@ class OutputTagPage(GenericPage):
             #breakpoint()
 
             if link_text is not None:
-                return_html += f"<li><a href='../../{combination_name}.html'>{link_text}</a>\n"
+                return_html += f"<li><a href='../../{combination_name}_1.html'>{link_text}</a>\n"
 
         return return_html
         
