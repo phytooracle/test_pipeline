@@ -16,6 +16,43 @@ def divide_list_into_chunks(a, n):
     k, m = divmod(len(a), n)
     return list((a[i*k+min(i, m):(i+1)*k+min(i+1, m)] for i in range(n)))
 
+def comparison_row(plant_name, tags, color):
+
+    return_html = ""
+    return_html += f"""
+    <tr>
+    <td bgcolor={color}>
+        <a href="{plant_name}/">{plant_name}</a><br>
+    </td>
+    <td>
+    """
+
+    for tag in tags:
+
+        return_html += f"""
+        <table>
+        <tr>
+        <td>
+            {tag}
+        </td>
+        <td>
+            <a href="{tag}/plant_reports/{plant_name}/level_1_plant_clip.gif"><img style="max-width: 300; max-height: 300px" src='{tag}/plant_reports/{plant_name}/level_1_plant_clip.gif'></a>
+            <!input type="checkbox" name="crop" onchange="do_crop_checkbox()"/>
+        </td>
+        <td>
+            <a href="{tag}/plant_reports/{plant_name}/soil_segmentation.gif"><img style="max-width: 300; max-height: 300px" src='{tag}/plant_reports/{plant_name}/soil_segmentation.gif'></a>
+            <!input type="checkbox" name="ground" onchange="do_ground_checkbox()" />
+        </td>
+        <td>
+            <a href="{tag}/plant_reports/{plant_name}/final.gif"><img style="max-width: 300; max-height: 300px" src='{tag}/plant_reports/{plant_name}/final.gif'></a>
+            <!input type="checkbox" name="segmentation" onchange="do_segmentation_checkbox()" />
+        </td>
+        </tr>
+        </table>
+        """
+    return_html += "</td></tr>"
+    return return_html
+
 
 def plant_data_row(plant_name):
 
@@ -146,28 +183,44 @@ class OutputTagPage(GenericPage):
             <hr>
             <table>
             <tr>
-            <td>
+            <td width="50%">
                 <small>
                     <a href="../config.yaml">The YAML File!...</a><br>
                     <pre>{pprint.pformat(self.yaml_dict['tags'])}</pre>
                 </small>
             </td>
-            <!--
             <td>
-                <b>Other {self.date} runs:</b><br>
+                <b>Compare this output with other {self.date} runs:</b><br>
                 {foo}
             </td>
-            -->
             </tr>
             </table>
         """
 
     def make_compare_with_links(self):
-        all_tag_paths = filesystem_functions.get_tag_paths(self.date)
-        filtered_tag_paths = [x for x in all_tag_paths if x != self.name]
+        import itertools
         return_html = ""
-        for t in filtered_tag_paths:
-            return_html += f"<li><a href='/{self.date}/{t}/plant_reports/index_1.html'>{t}</a>\n"
+
+        # Get all combinations of tags
+        tag_paths = filesystem_functions.get_tag_paths(self.date)
+        date_tags = filesystem_functions.convert_paths_to_names(tag_paths)
+        date_tags.sort()
+        tag_combinations = list(itertools.combinations(date_tags, 2))
+
+        # we only want combinations that have the current tag (self_tag) in them
+        self_tag = self.name.split("/")[-2]
+        for combination in tag_combinations:
+            link_text = None
+            combination_name = "-vs-".join(combination)
+            if combination[0] == self_tag:
+                link_text = f"vs {combination[1]}"
+            if combination[1] == self_tag:
+                link_text = f"vs {combination[0]}"
+            #breakpoint()
+
+            if link_text is not None:
+                return_html += f"<li><a href='../../{combination_name}.html'>{link_text}</a>\n"
+
         return return_html
         
 
