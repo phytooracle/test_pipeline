@@ -1,7 +1,7 @@
 ---
 tags:
   pipeline: machinelearning_cropping
-  description: ct_032_eps007 #dev
+  description: dev
   notes: Initial development of machine learning (ML)-based cropping approach.
   runby: Emmanuel Miguel Gonzalez
 
