@@ -79,6 +79,60 @@ def make_output_process_tag_pages(tag_path):
 
 
 
+def make_comparison_pages(date, date_tags):
+    import itertools
+    tags = filesystem_functions.convert_paths_to_names(date_tags)
+    tags.sort()
+    tag_combinations = list(itertools.combinations(tags, 2))
+    for combination in tag_combinations:
+        combination_name = "-vs-".join(combination)
+        combinationPage  = dashboard_html.GenericPage(f"{date}/{combination_name}.html",
+                                                      name=combination_name)
+        # find plants that they have in common
+        tag1_plants = filesystem_functions.get_plants_in_dir(os.path.join(date, combination[0]))
+        tag2_plants = filesystem_functions.get_plants_in_dir(os.path.join(date, combination[1]))
+        plant_dirs = list(set(tag1_plants + tag2_plants))
+
+        n_pages = -(-len(plant_dirs)//N_PLANTS_PER_PAGE)  # Round up.  3.0->3, 3.1->4
+        page_list = dashboard_html.divide_list_into_chunks(plant_dirs, n_pages)
+
+        nav_html = f"{len(plant_dirs)} plants have been divided into {n_pages} page/s...<br>"
+        for n in range(n_pages):
+            nav_html += f"<li><a href='index_{n+1}.html'>Page {n+1}</a>\n"
+
+        #####################
+        # Loop through pages
+        #####################
+
+        for page_count, plant_dirs in enumerate(page_list):
+            page_count += 1
+
+            print(f"Creating page {page_count} of {n_pages}")
+            
+            # note: tagPage is not a string, it is a class.
+            combinationPage += f"""
+                <h2>Page {page_count} of {n_pages}</h2>
+                <hr>
+                {nav_html}
+                <hr>
+                <table>
+            """
+
+        colors = ("#332211", "#112233")
+        count = 0
+        for plant_name in plant_dirs:
+            count += 1
+            color = colors[ count%2 ]
+            combinationPage += dashboard_html.comparison_row(plant_name, combination, color)
+
+        combinationPage += f"""
+            </table>
+        """
+
+        combinationPage.save_page()
+
+
+
 if __name__ == "__main__":
 
     #dashboard_root = os.path.join(conf.args.date, conf.args.output_process_tag, "plant_reports")
@@ -101,6 +155,7 @@ if __name__ == "__main__":
         metaPage += f"<h2>{date}</h2>\n"
         datePage = dashboard_html.GenericPage(os.path.join(date, f"index.html"))
         date_tags = filesystem_functions.get_tag_paths(date)
+        date_tags.sort()
         for tag_path in date_tags:
             # dummyIndextagPage is wierd.  We only make it to get the path to pass
             # to metaPage.  The real tag pages get created in make_output_process_tag_pages
@@ -113,6 +168,7 @@ if __name__ == "__main__":
             n_plants = len(filesystem_functions.get_plants_in_dir(tag_path))
             metaPage += f"({n_plants} plants processed)"
             make_output_process_tag_pages(tag_path)
+            make_comparison_pages(date, date_tags)
 
 
         # note: GenericPage() is a class, not a string, it is a class, so
