@@ -10,14 +10,14 @@ modules:
     container:
       simg_name: heatmap_ml_based_cropping.simg
       dockerhub_path: docker://phytooracle/heatmap_ml_based_cropping:latest
-    command: singularity run -B $(pwd):/mnt --pwd /mnt heatmap_ml_based_cropping.simg 
+    command: singularity run -B $(pwd):/mnt --pwd /mnt heatmap_ml_based_cropping.simg -p ${PLANT_PATH} -m ${DET_MODEL_PATH}
 
 
   2:
     container: 
       simg_name: dgcnn_single_plant_soil_segmentation_pipeline.simg
       dockerhub_path: docker://phytooracle/dgcnn_single_plant_soil_segmentation_pipeline:latest
-    command: singularity run -B $(pwd):/mnt --pwd /mnt dgcnn_single_plant_soil_segmentation_pipeline.simg -p ${PLANT_PATH} --model_path ${MODEL_PATH} -po segmentation_pointclouds -fo plant_reports -ef poly_crop
+    command: singularity run -B $(pwd):/mnt --pwd /mnt dgcnn_single_plant_soil_segmentation_pipeline.simg -p ${PLANT_PATH} --model_path ${SEG_MODEL_PATH} -po segmentation_pointclouds -fo plant_reports -ef poly_crop
 
   3:
     container: 
