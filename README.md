@@ -73,7 +73,7 @@ python generate_dashboard.py
 ```
 
 
-### OLD Dashboard
+### DEPRECATED Dashboard (generate_dashboard_for_pipeline_output.py)
 
 From the same directory you ran `test_pipeline.py` do something like this...
 ```
