@@ -1,16 +1,16 @@
 ---
 tags:
   pipeline: polynomial_cropping
-  description: dev
+  description: ct_032_eps007 #dev
   notes: Initial development of polynomial cropping approach.
-  runby: YourNameHere
+  runby: Emmanuel Miguel Gonzalez
 
 modules:
   1:
     container:
       simg_name: polynomial_surface_fitting_s10.simg
       dockerhub_path: docker://phytooracle/polynomial_surface_fitting_s10:latest
-    command: singularity run -B $(pwd):/mnt --pwd /mnt polynomial_surface_fitting_s10.simg -p ${PLANT_PATH} -c -po segmentation_pointclouds -fo plant_reports
+    command: singularity run -B $(pwd):/mnt --pwd /mnt polynomial_surface_fitting_s10.simg -p ${PLANT_PATH} -c -po segmentation_pointclouds -fo plant_reports -ct 0.32
 
 
   2:
@@ -23,7 +23,7 @@ modules:
     container: 
       simg_name: 3d_neighbor_removal.simg
       dockerhub_path: docker://phytooracle/3d_neighbor_removal:latest
-    command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_neighbor_removal.simg -plant ${PLANT_NAME} -e 0.01 -pod segmentation_pointclouds -fod plant_reports
+    command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_neighbor_removal.simg -plant ${PLANT_NAME} -e 0.07 -pod segmentation_pointclouds -fod plant_reports
   
   4:
     container: 
