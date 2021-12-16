@@ -50,12 +50,19 @@ def get_args():
                         type=int,
                         required=False)
     
-    parser.add_argument('-m',
-                        '--model',
-                        help='Model weights to use for containers',
-                        metavar='model',
+    parser.add_argument('-sm',
+                        '--seg_model',
+                        help='Model weights to use for segmentation container.',
+                        metavar='seg_model',
                         type=str,
                         default='/iplant/home/shared/phytooracle/season_10_lettuce_yr_2020/level_0/necessary_files/dgcnn_3d_model.pth')
+    
+    parser.add_argument('-dm',
+                        '--det_model',
+                        help='Model weights to use for detection container.',
+                        metavar='det_model',
+                        type=str,
+                        default='/iplant/home/shared/phytooracle/season_10_lettuce_yr_2020/level_0/necessary_files/detecto_heatmap_lettuce_detection_weights.pth')
 
     return parser.parse_args()
 
@@ -105,13 +112,18 @@ def build_containers(dictionary):
 
 
 # --------------------------------------------------
-def get_model_files(model_path):
+def get_model_files(seg_model_path, det_model_path):
     """Download model weights from CyVerse DataStore"""
     
-    if not os.path.isfile(os.path.basename(model_path)):
-        cmd1 = f'iget -fKPVT {model_path}'
+    if not os.path.isfile(os.path.basename(seg_model_path)):
+        cmd1 = f'iget -fKPVT {seg_model_path}'
         sp.call(cmd1, shell=True)
-    return os.path.basename(model_path)
+
+    if not os.path.isfile(os.path.basename(det_model_path)):
+        cmd1 = f'iget -fKPVT {det_model_path}'
+        sp.call(cmd1, shell=True)
+
+    return os.path.basename(seg_model_path), os.path.basename(det_model_path) 
 
 
 # --------------------------------------------------
@@ -172,7 +184,7 @@ def process_plant(plant):
     plant_name = os.path.basename(plant)
 
     for k, v in dictionary['modules'].items():
-        command = v['command'].replace('${PLANT_PATH}', plant).replace('${MODEL_PATH}', model_name).replace('${PLANT_NAME}', plant_name)
+        command = v['command'].replace('${PLANT_PATH}', plant).replace('${SEG_MODEL_PATH}', seg_model_name).replace('${PLANT_NAME}', plant_name).replace('${DET_MODEL_PATH}', det_model_name)
         print(command)
         sp.call(command, shell=True)
 
@@ -201,8 +213,8 @@ def main():
         
         # Download raw test dataset and GGCNN model weights.
         dir_name = download_raw_data(cyverse_path)
-        global model_name
-        model_name = get_model_files(args.model)
+        global seg_model_name, det_model_name
+        seg_model_name, det_model_name = get_model_files(args.seg_model, args.det_model)
 
         # Process each plant by running commands outlined in YAML file.
         full_plant_list = glob.glob(os.path.join(dir_name, '*'))
