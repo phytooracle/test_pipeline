@@ -213,8 +213,7 @@ def main():
         
         # Download raw test dataset and GGCNN model weights.
         dir_name = download_raw_data(cyverse_path)
-        global seg_model_name
-        global det_model_name
+        global seg_model_name, det_model_name
         seg_model_name, det_model_name = get_model_files(args.seg_model, args.det_model)
 
         print(det_model_name)
