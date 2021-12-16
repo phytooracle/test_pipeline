@@ -68,7 +68,6 @@ def get_args():
     parser.add_argument('-u',
                         '--upload',
                         help='Upload to CyVerse.',
-                        metavar='upload',
                         action='store_true')
 
     return parser.parse_args()
