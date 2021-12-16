@@ -31,7 +31,8 @@ def get_args():
                         action='store_true')
 
     parser.add_argument('-d',
-                        '--date',
+                        '--dates',
+                        nargs='+',
                         help='Scan date to process. (psst, try: 2020-01-22, 2020-02-16 or 2020-03-02)',
                         metavar='scan_date',
                         type=str,
@@ -63,6 +64,12 @@ def get_args():
                         metavar='det_model',
                         type=str,
                         default='/iplant/home/shared/phytooracle/season_10_lettuce_yr_2020/level_0/necessary_files/detecto_heatmap_lettuce_detection_weights.pth')
+    
+    parser.add_argument('-u',
+                        '--upload',
+                        help='Upload to CyVerse.',
+                        metavar='upload',
+                        action='store_true')
 
     return parser.parse_args()
 
@@ -154,7 +161,7 @@ def save_yaml(yaml_file_path, relative_save_dir):
     yaml_save_path = os.path.join(os.getcwd(), relative_save_dir, "config.yaml")
     shutil.copy(yaml_file_path, yaml_save_path)
 
-
+    
 # --------------------------------------------------
 def tar_outputs(scan_date, dictionary):
     
@@ -190,50 +197,81 @@ def process_plant(plant):
 
 
 # --------------------------------------------------
+def upload_outputs(date, dictionary, process_tag):
+    root = dictionary['paths']['cyverse']['output']['basename']
+    subdir = dictionary['paths']['cyverse']['output']['subdir']
+    cyverse_path = os.path.join(root, subdir, date)
+
+    cwd = os.getcwd()
+
+    try:
+        os.chdir(date)
+        cmd1 = f'icd {cyverse_path}'
+        sp.call(cmd1, shell=True)
+
+        cmd2 = f'iput -rfKPVT {process_tag}'
+        sp.call(cmd2, shell=True)
+        os.chdir(cwd)
+        
+    except:
+        os.chdir(date)
+        cmd1 = f'imkdir {cyverse_path}'
+        sp.call(cmd1, shell=True)
+
+        cmd2 = f'iput -rfKPVT {process_tag}'
+        sp.call(cmd2, shell=True)
+        os.chdir(cwd)
+
+
+# --------------------------------------------------
 def main():
     """Run processing here"""
 
     args = get_args()
 
+    for date in args.dates:
 
-    with open(args.yaml, 'r') as stream:
-        try:
-            global dictionary
-            dictionary = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
+        with open(args.yaml, 'r') as stream:
+            try:
+                global dictionary
+                dictionary = yaml.safe_load(stream)
+            except yaml.YAMLError as exc:
+                print(exc)
 
-        cyverse_path = os.path.join(dictionary['paths']['cyverse']['input']['basename'], 
-                                    args.date,
-                                    dictionary['paths']['cyverse']['input']['subdir'], 
-                                    ''.join([str(args.date), str(dictionary['paths']['cyverse']['input']['suffix'])]))
+            cyverse_path = os.path.join(dictionary['paths']['cyverse']['input']['basename'], 
+                                        date,
+                                        dictionary['paths']['cyverse']['input']['subdir'], 
+                                        ''.join([str(date), str(dictionary['paths']['cyverse']['input']['suffix'])]))
 
-        # Build necessary containers outlined in YAML file.
-        build_containers(dictionary)
-        
-        # Download raw test dataset and GGCNN model weights.
-        dir_name = download_raw_data(cyverse_path)
-        global seg_model_name, det_model_name
-        seg_model_name, det_model_name = get_model_files(args.seg_model, args.det_model)
+            # Build necessary containers outlined in YAML file.
+            build_containers(dictionary)
+            
+            # Download raw test dataset and GGCNN model weights.
+            dir_name = download_raw_data(cyverse_path)
+            global seg_model_name, det_model_name
+            seg_model_name, det_model_name = get_model_files(args.seg_model, args.det_model)
 
-        # Process each plant by running commands outlined in YAML file.
-        full_plant_list = glob.glob(os.path.join(dir_name, '*'))
-        if args.n_plants is not None:
-            plant_list = full_plant_list[:args.n_plants]
-        else:
-            plant_list = full_plant_list
+            # Process each plant by running commands outlined in YAML file.
+            full_plant_list = glob.glob(os.path.join(dir_name, '*'))
+            if args.n_plants is not None:
+                plant_list = full_plant_list[:args.n_plants]
+            else:
+                plant_list = full_plant_list
 
-        with multiprocessing.Pool(multiprocessing.cpu_count()//4) as p:
-            p.map(process_plant, plant_list)
+            with multiprocessing.Pool(multiprocessing.cpu_count()//4) as p:
+                p.map(process_plant, plant_list)
 
-    tar_outputs(args.date, dictionary)
-    save_yaml(args.yaml, os.path.join(args.date,  output_process_tag(dictionary)))
+        tar_outputs(date, dictionary)
+        save_yaml(args.yaml, os.path.join(date,  output_process_tag(dictionary)))
 
-    # input_dir = ''.join([args.date, '_test_set'])
-    # run_plant_volume(args.date, input_dir)
+        if args.upload:
+            upload_outputs(date, dictionary, output_process_tag(dictionary))
 
-    # if os.path.isdir(args.date):
-    #     shutil.move(dir_name, args.date)
+        # input_dir = ''.join([date, '_test_set'])
+        # run_plant_volume(date, input_dir)
+
+        # if os.path.isdir(date):
+        #     shutil.move(dir_name, date)
 
 
 # --------------------------------------------------
