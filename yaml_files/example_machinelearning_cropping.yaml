@@ -1,7 +1,7 @@
 ---
 tags:
   pipeline: machinelearning_cropping
-  description: conf_05
+  description: conf_05_fix
   notes: Initial development of machine learning (ML)-based cropping approach.
   runby: Emmanuel Miguel Gonzalez
 
