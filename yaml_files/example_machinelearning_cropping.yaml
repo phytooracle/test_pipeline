@@ -1,7 +1,7 @@
 ---
 tags:
   pipeline: machinelearning_cropping
-  description: dev
+  description: conf_05
   notes: Initial development of machine learning (ML)-based cropping approach.
   runby: Emmanuel Miguel Gonzalez
 
@@ -10,7 +10,7 @@ modules:
     container:
       simg_name: heatmap_ml_based_cropping.simg
       dockerhub_path: docker://phytooracle/heatmap_ml_based_cropping:latest
-    command: singularity run -B $(pwd):/mnt --pwd /mnt heatmap_ml_based_cropping.simg -p ${PLANT_PATH} -m ${DET_MODEL_PATH}
+    command: singularity run -B $(pwd):/mnt --pwd /mnt heatmap_ml_based_cropping.simg -p ${PLANT_PATH} -m ${DET_MODEL_PATH} -c 0.5
 
 
   2:
@@ -44,9 +44,5 @@ paths:
       subdir: test_set/
       suffix: _test_set.tar.gz
     output: 
-      base: /iplant/home/shared/phytooracle/season_10_lettuce_yr_2020/level_2/scanner3DTop/
-      subdir: segmentation_pointclouds
-
-
-
-
+      basename: /iplant/home/shared/phytooracle/season_10_lettuce_yr_2020/level_1/scanner3DTop/
+      subdir: test_outputs
