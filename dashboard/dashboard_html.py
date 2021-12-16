@@ -33,7 +33,7 @@ def comparison_row(plant_name, tags, color):
         <table>
         <tr>
         <td>
-            {"<br>".join(tag.split("_"))}
+            <a href="{tag}/plant_reports/index_1.html">{"<br>".join(tag.split("_"))}</a>
         </td>
         <td>
             <a href="{tag}/plant_reports/{plant_name}/level_1_plant_clip.gif"><img style="max-width: 300; max-height: 300px" src='{tag}/plant_reports/{plant_name}/level_1_plant_clip.gif'></a>
@@ -41,11 +41,11 @@ def comparison_row(plant_name, tags, color):
         </td>
         <td>
             <a href="{tag}/plant_reports/{plant_name}/soil_segmentation.gif"><img style="max-width: 300; max-height: 300px" src='{tag}/plant_reports/{plant_name}/soil_segmentation.gif'></a>
-            <!input type="checkbox" name="ground" onchange="do_ground_checkbox()" />
+            <input type="checkbox" name="{tag}_ground" onchange="{tag}_checkbox()" />
         </td>
         <td>
             <a href="{tag}/plant_reports/{plant_name}/final.gif"><img style="max-width: 300; max-height: 300px" src='{tag}/plant_reports/{plant_name}/final.gif'></a>
-            <!input type="checkbox" name="segmentation" onchange="do_segmentation_checkbox()" />
+            <!input type="checkbox" name="segmentation" onchange="{tag}_checkbox()" />
         </td>
         </tr>
         </table>
@@ -75,6 +75,39 @@ def plant_data_row(plant_name):
     </td>
     """
 
+def combination_row_bottom(tags):
+
+    return_html = "</table>"
+
+    for tag in tags:
+        return_html += f"""
+            <p><br>
+            <p><label id="{tag}_count">{tag}: 0</label></p>
+        """
+
+    return_html += """
+            <script>
+    """
+
+    for tag in tags:
+
+        return_html += f"""
+                function {tag}_checkbox() {{
+        """
+        return_html += f"""
+                  document.getElementById("{tag}_count").innerHTML = "Flags: " + total + " (" + perc.toFixed(2) + "%)";
+                  let total = document.querySelectorAll('input[name="{tag}_ground"]:checked').length;
+                  let perc = total / document.querySelectorAll('input[name="{tag}_ground"]').length * 100;
+        """
+    return_html += """
+            }
+            </script>
+        <p>
+        <hr>
+    """
+
+    return return_html
+
 def plant_data_row_bottom():
     return """
         <tr>
@@ -82,7 +115,6 @@ def plant_data_row_bottom():
             <td><center><label id="cropCount">Flagged: 0</label></center></td>
             <td><center><label id="groundCount">Flagged: 0</label></center></td>
             <td><center><label id="segmentationCount">Flagged: 0</label></center></td>
-            <td></td>
         </tr>
         </table>
 <p>

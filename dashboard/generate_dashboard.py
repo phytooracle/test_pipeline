@@ -114,6 +114,7 @@ def make_comparison_pages(date, date_tags):
             
             # note: tagPage is not a string, it is a class.
             combinationPage += f"""
+                <h2>{date}</h2>
                 <h2>Page {page_count} of {n_pages}</h2>
                 <hr>
                 {nav_html}
@@ -128,6 +129,7 @@ def make_comparison_pages(date, date_tags):
                 color = colors[ count%2 ]
                 combinationPage += dashboard_html.comparison_row(plant_name, combination, color)
 
+            combinationPage += dashboard_html.combination_row_bottom(combination)
             combinationPage += f"""
                 </table>
             """
