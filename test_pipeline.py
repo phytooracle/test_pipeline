@@ -205,6 +205,12 @@ def upload_outputs(date, dictionary, process_tag):
 
     try:
         os.chdir(date)
+
+        for k, v in dictionary['paths']['pipeline_outpath'].items():
+            
+            rm_dir = os.path.join(process_tag, v)
+            shutil.rmtree(rm_dir)
+
         cmd1 = f'icd {cyverse_path}'
         sp.call(cmd1, shell=True)
 
