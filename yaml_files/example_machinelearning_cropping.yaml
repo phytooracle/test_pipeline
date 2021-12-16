@@ -44,9 +44,5 @@ paths:
       subdir: test_set/
       suffix: _test_set.tar.gz
     output: 
-      base: /iplant/home/shared/phytooracle/season_10_lettuce_yr_2020/level_2/scanner3DTop/
-      subdir: segmentation_pointclouds
-
-
-
-
+      basename: /iplant/home/shared/phytooracle/season_10_lettuce_yr_2020/level_1/scanner3DTop/
+      subdir: test_outputs
