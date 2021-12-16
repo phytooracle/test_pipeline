@@ -217,6 +217,8 @@ def main():
         global det_model_name
         seg_model_name, det_model_name = get_model_files(args.seg_model, args.det_model)
 
+        print(det_model_name)
+
         # Process each plant by running commands outlined in YAML file.
         full_plant_list = glob.glob(os.path.join(dir_name, '*'))
         if args.n_plants is not None:
