@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Author : eg
+Author : Emmanuel Gonzalez
 Date   : 2021-12-17
-Purpose: Rock the Casbah
+Purpose: PhytoOracle | Scalable, modular phenomic data processing pipelines
 """
 
 import argparse
@@ -23,7 +23,7 @@ def get_args():
 
     parser.add_argument('positional',
                         metavar='str',
-                        help='A positional argument')
+                        help='Input directory for processing')
 
     parser.add_argument('-ms',
                         '--match_string',
@@ -219,7 +219,7 @@ def run_jx2json(json_out_path, cctools_path, batch_type, manager_name, retries=3
 
 # --------------------------------------------------
 def main():
-    """Make a jazz noise here"""
+    """Run processing here"""
 
     args = get_args()
     cctools_path = download_cctools()
