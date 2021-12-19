@@ -11,6 +11,7 @@ import sys
 from typing_extensions import final
 import json
 import subprocess as sp
+import yaml
 
 
 # --------------------------------------------------
@@ -25,8 +26,8 @@ def get_args():
                         metavar='str',
                         help='Input directory for processing')
 
-    parser.add_argument('-ms',
-                        '--match_string',
+    parser.add_argument('-if',
+                        '--input_filename',
                         help='Filename of input files',
                         metavar='str',
                         type=str,
@@ -69,7 +70,26 @@ def get_args():
                         type=int,
                         default=0)
 
+    parser.add_argument('-y',
+                        '--yaml',
+                        help='YAML file specifying processing tasks/arguments',
+                        metavar='str',
+                        type=str,
+                        required=True)
+
     return parser.parse_args()
+
+
+
+# --------------------------------------------------
+def build_containers(dictionary):
+    """Build module containers outlined in YAML file"""
+
+    for k, v in dictionary['modules'].items():
+        container = v['container']
+        if not os.path.isfile(container["simg_name"]):
+            print(f'Building {container["simg_name"]}.')
+            sp.call(f'singularity build {container["simg_name"]} {container["dockerhub_path"]}', shell=True)
 
 
 # --------------------------------------------------
@@ -157,7 +177,7 @@ def write_file_list(input_list, out_path='file.txt'):
 
 
 # --------------------------------------------------
-def generate_makeflow_json(files_list, n_rules=1, json_out_path='wf_file.json'):
+def generate_makeflow_json(files_list, command, yaml, n_rules=1, json_out_path='wf_file.json'):
     '''
     Generate Makeflow JSON file to distribute tasks. 
 
@@ -170,21 +190,16 @@ def generate_makeflow_json(files_list, n_rules=1, json_out_path='wf_file.json'):
         - json_out_path: Path to the resulting JSON file
     '''
 
-    final_dict = {}
+    jx_dict = {
+        "rules": [
+                    {
+                        "command" : command.replace('${PLANT_PATH}', os.path.dirname(file)),
+                        # "outputs" : [ file ],
+                        "inputs"  : [ file ]
 
-
-    if n_rules == 1:
-
-        jx_dict = {
-            "rules": [
-                        {
-                            "command" : "/bin/echo hello world",
-                            "outputs" : [ file ],
-                            "inputs"  : [ file ]
-
-                        } for file in files_list
-                    ]
-        }             
+                    } for file in  files_list
+                ]
+    } 
     
     with open(json_out_path, 'w') as convert_file:
         convert_file.write(json.dumps(jx_dict))
@@ -223,10 +238,22 @@ def main():
 
     args = get_args()
     cctools_path = download_cctools()
-    files_list = get_file_list(args.positional, args.match_string, level=args.distribution_level)
-    write_file_list(files_list)
-    json_out_path = generate_makeflow_json(files_list)
-    # run_jx2json(json_out_path, cctools_path, batch_type=args.batch_type, manager_name=args.manager_name, retries=args.retries, port=args.port, out_log=True)
+    
+    with open(args.yaml, 'r') as stream:
+        try:
+            global dictionary
+            dictionary = yaml.safe_load(stream)
+            build_containers(dictionary)
+
+        except yaml.YAMLError as exc:
+            print(exc)
+
+        for k, v in dictionary['modules'].items():
+            distribution_level = v['distribution_level']
+            files_list = get_file_list(args.positional, args.input_filename, level=distribution_level)
+            write_file_list(files_list)
+            json_out_path = generate_makeflow_json(files_list, v['command'], yaml=args.yaml)
+            run_jx2json(json_out_path, cctools_path, batch_type=args.batch_type, manager_name=args.manager_name, retries=args.retries, port=args.port, out_log=True)
 
 
 # --------------------------------------------------
