@@ -77,8 +77,21 @@ def get_args():
                         type=str,
                         required=True)
 
+    parser.add_argument('-sm',
+                        '--seg_model',
+                        help='Model weights to use for segmentation container.',
+                        metavar='seg_model',
+                        type=str,
+                        default='/iplant/home/shared/phytooracle/season_10_lettuce_yr_2020/level_0/necessary_files/dgcnn_3d_model.pth')
+    
+    parser.add_argument('-dm',
+                        '--det_model',
+                        help='Model weights to use for detection container.',
+                        metavar='det_model',
+                        type=str,
+                        default='/iplant/home/shared/phytooracle/season_10_lettuce_yr_2020/level_0/necessary_files/detecto_heatmap_lettuce_detection_weights.pth')
+    
     return parser.parse_args()
-
 
 
 # --------------------------------------------------
@@ -113,10 +126,9 @@ def download_cctools(cctools_version = '7.1.12', architecture = 'x86_64', sys_os
     if not os.path.isdir(os.path.join(home, cctools_file)):
         print(f'Downloading {cctools_file}.')
         cctools_url = ''.join(['http://ccl.cse.nd.edu/software/files/', cctools_file])
-        cmd1 = f'cd {home} && wget {cctools_url}.tar.gz && tar -xzvf {cctools_file}.tar.gz'
+        cmd1 = f'cd {home} && wget {cctools_url}.tar.gz && tar -xzvf {cctools_file}.tar.gz && rm {cctools_file}.tar.gz'
         sp.call(cmd1, shell=True)
-        print(os.getcwd())
-        #sp.call(f'cd {cwd}')
+        # sp.call(f'rm {cctools_url}.tar.gz', shell=True)
         print(f'Download complete. CCTools version {cctools_version} is ready!')
 
     else:
@@ -177,7 +189,22 @@ def write_file_list(input_list, out_path='file.txt'):
 
 
 # --------------------------------------------------
-def generate_makeflow_json(files_list, command, yaml, n_rules=1, json_out_path='wf_file.json'):
+def get_model_files(seg_model_path, det_model_path):
+    """Download model weights from CyVerse DataStore"""
+    
+    if not os.path.isfile(os.path.basename(seg_model_path)):
+        cmd1 = f'iget -fKPVT {seg_model_path}'
+        sp.call(cmd1, shell=True)
+
+    if not os.path.isfile(os.path.basename(det_model_path)):
+        cmd1 = f'iget -fKPVT {det_model_path}'
+        sp.call(cmd1, shell=True)
+
+    return os.path.basename(seg_model_path), os.path.basename(det_model_path) 
+
+
+# --------------------------------------------------
+def generate_makeflow_json(files_list, command, container, yaml, n_rules=1, json_out_path='wf_file.json'):
     '''
     Generate Makeflow JSON file to distribute tasks. 
 
@@ -193,9 +220,11 @@ def generate_makeflow_json(files_list, command, yaml, n_rules=1, json_out_path='
     jx_dict = {
         "rules": [
                     {
-                        "command" : command.replace('${PLANT_PATH}', os.path.dirname(file)),
+                        "command" : command.replace('${PLANT_PATH}', os.path.dirname(file)).replace('${SEG_MODEL_PATH}', seg_model_name),
                         # "outputs" : [ file ],
-                        "inputs"  : [ file ]
+                        "inputs"  : [ file,
+                                      container,
+                                      seg_model_name ]
 
                     } for file in  files_list
                 ]
@@ -222,15 +251,35 @@ def run_jx2json(json_out_path, cctools_path, batch_type, manager_name, retries=3
     cctools = os.path.join(home, cctools)
 
     if out_log==True:
-        arguments = f'-T {batch_type} --json {json_out_path} -N {manager_name} -r {retries} -p {port} -dall -o dall.log $@'
+        arguments = f'-T {batch_type} --json {json_out_path} -a -N {manager_name} -M {manager_name} -r {retries} -p {port} -dall -o dall.log --disable-cache $@'
         cmd1 = ' '.join([cctools, arguments])
 
     else:
-        arguments = f'-T {batch_type} --json {json_out_path} -N {manager_name} -r {retries} -p {port} $@'
+        arguments = f'-T {batch_type} --json {json_out_path} -a -N {manager_name} -M {manager_name} -r {retries} -p {port} --disable-cache $@'
         cmd1 = ' '.join([cctools, arguments])
 
     sp.call(cmd1, shell=True)
 
+def clean_directory():
+
+    if os.path.isfile("dall.log"):
+        os.remove("dall.log")
+    
+    if os.path.isfile("file.txt"):
+        os.remove("file.txt")
+
+    if os.path.isfile("wf_file.json"):
+        os.remove("wf_file.json")
+
+    if os.path.isfile("wf_file.json.makeflowlog"):
+        os.remove("wf_file.json.makeflowlog")
+
+    if os.path.isfile("wf_file.json.wqlog"):
+        os.remove("wf_file.json.wqlog")
+
+    if os.path.isfile("wf_file.json.wqlog.tr"):
+        os.remove("wf_file.json.wqlog.tr")
+    
 
 # --------------------------------------------------
 def main():
@@ -238,6 +287,7 @@ def main():
 
     args = get_args()
     cctools_path = download_cctools()
+    clean_directory()
     
     with open(args.yaml, 'r') as stream:
         try:
@@ -249,11 +299,17 @@ def main():
             print(exc)
 
         for k, v in dictionary['modules'].items():
+            global seg_model_name, det_model_name
+            seg_model_name, det_model_name = get_model_files(args.seg_model, args.det_model)
+
             distribution_level = v['distribution_level']
+            container = v['container']['simg_name']
+
             files_list = get_file_list(args.positional, args.input_filename, level=distribution_level)
-            write_file_list(files_list)
-            json_out_path = generate_makeflow_json(files_list, v['command'], yaml=args.yaml)
+            write_file_list(files_list)            
+            json_out_path = generate_makeflow_json(files_list=files_list, command=v['command'], container=container, yaml=args.yaml)
             run_jx2json(json_out_path, cctools_path, batch_type=args.batch_type, manager_name=args.manager_name, retries=args.retries, port=args.port, out_log=True)
+            clean_directory()
 
 
 # --------------------------------------------------
