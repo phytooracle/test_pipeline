@@ -288,7 +288,8 @@ def generate_makeflow_json(files_list, command, container, yaml, n_rules=1, json
                         # "outputs" : [ file ],
                         "inputs"  : [ file,
                                       container,
-                                      seg_model_name ]
+                                      seg_model_name, 
+                                      det_model_name ]
 
                     } for file in  files_list
                 ]
