@@ -169,7 +169,6 @@ def download_raw_data(irods_path):
 
     if not os.path.isdir(dir_name):
         cmd1 = f'iget -fKPVT {irods_path}'
-        print(cmd1)
         cwd = os.getcwd()
 
         if '.gz' in file_name: 
@@ -392,7 +391,6 @@ def main():
             container = v['container']['simg_name']
 
             files_list = get_file_list(dir_name, args.input_filename, level=distribution_level)
-            print(files_list)
             write_file_list(files_list)            
             json_out_path = generate_makeflow_json(files_list=files_list, command=v['command'], container=container, yaml=args.yaml)
             run_jx2json(json_out_path, cctools_path, batch_type=args.batch_type, manager_name=args.manager_name, retries=args.retries, port=args.port, out_log=True)
