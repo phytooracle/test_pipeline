@@ -13,7 +13,6 @@ modules:
     command: singularity run -B $(pwd):/mnt --pwd /mnt heatmap_ml_based_cropping.simg -p ${PLANT_PATH} -m ${DET_MODEL_PATH} -c 0.5
     distribution_level: plant
 
-
   2:
     container: 
       simg_name: dgcnn_single_plant_soil_segmentation_pipeline.simg
