@@ -395,8 +395,8 @@ def main():
             print(files_list)
             write_file_list(files_list)            
             json_out_path = generate_makeflow_json(files_list=files_list, command=v['command'], container=container, yaml=args.yaml)
-            # run_jx2json(json_out_path, cctools_path, batch_type=args.batch_type, manager_name=args.manager_name, retries=args.retries, port=args.port, out_log=True)
-            # clean_directory()
+            run_jx2json(json_out_path, cctools_path, batch_type=args.batch_type, manager_name=args.manager_name, retries=args.retries, port=args.port, out_log=True)
+            clean_directory()
 
 
 # --------------------------------------------------
