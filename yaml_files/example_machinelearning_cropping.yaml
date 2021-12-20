@@ -14,7 +14,7 @@ modules:
     distribution_level: plant
     out_path: segmentation_pointclouds
 
-  2:
+  # 2:
   #   container: 
   #     simg_name: dgcnn_single_plant_soil_segmentation_pipeline.simg
   #     dockerhub_path: docker://phytooracle/dgcnn_single_plant_soil_segmentation_pipeline:latest
