@@ -285,8 +285,8 @@ def generate_makeflow_json(files_list, command, container, yaml, n_rules=1, json
         "rules": [
                     {
                         "command" : command.replace('${PLANT_PATH}', os.path.dirname(file)).replace('${SEG_MODEL_PATH}', seg_model_name).replace('${PLANT_NAME}', os.path.basename(file)).replace('${DET_MODEL_PATH}', det_model_name),
-                        "outputs" : [ os.path.join('segmentation_pointclouds', os.path.basename(file)),
-                                      os.path.join('plantreports', os.path.basename(file)) ],
+                        "outputs" : [ os.path.join('segmentation_pointclouds', os.path.dirname(file)),
+                                      os.path.join('plantreports', os.path.dirname(file)) ],
                         "inputs"  : [ file,
                                       container,
                                       seg_model_name, 
