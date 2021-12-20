@@ -267,7 +267,7 @@ def get_model_files(seg_model_path, det_model_path):
 
 
 # --------------------------------------------------
-def generate_makeflow_json(files_list, command, container, yaml, n_rules=1, json_out_path='wf_file.json'):
+def generate_makeflow_json(files_list, command, container, yaml, out_path, n_rules=1, json_out_path='wf_file.json'):
     '''
     Generate Makeflow JSON file to distribute tasks. 
 
@@ -284,7 +284,7 @@ def generate_makeflow_json(files_list, command, container, yaml, n_rules=1, json
         "rules": [
                     {
                         "command" : command.replace('${PLANT_PATH}', os.path.dirname(file)).replace('${SEG_MODEL_PATH}', seg_model_name).replace('${PLANT_NAME}', os.path.basename(os.path.dirname(file))).replace('${DET_MODEL_PATH}', det_model_name),
-                        "outputs" : [ os.path.join('segmentation_pointclouds', os.path.basename(os.path.dirname(file))) ],
+                        "outputs" : [ os.path.join(out_path, os.path.basename(os.path.dirname(file))) ],
                         "inputs"  : [ file,
                                       container,
                                       seg_model_name, 
@@ -388,10 +388,11 @@ def main():
 
             distribution_level = v['distribution_level']
             container = v['container']['simg_name']
+            out_path = v['out_path']
 
             files_list = get_file_list(dir_name, args.input_filename, level=distribution_level)
             write_file_list(files_list)            
-            json_out_path = generate_makeflow_json(files_list=files_list, command=v['command'], container=container, yaml=args.yaml)
+            json_out_path = generate_makeflow_json(files_list=files_list, command=v['command'], container=container, yaml=args.yaml, out_path=out_path)
             run_jx2json(json_out_path, cctools_path, batch_type=args.batch_type, manager_name=args.manager_name, retries=args.retries, port=args.port, out_log=True)
             clean_directory()
 
