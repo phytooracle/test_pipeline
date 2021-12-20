@@ -22,9 +22,9 @@ def get_args():
         description='PhytoOracle | Scalable, modular phenomic data processing pipelines',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    parser.add_argument('positional',
-                        metavar='str',
-                        help='Input directory for processing')
+    # parser.add_argument('positional',
+    #                     metavar='str',
+    #                     help='Input directory for processing')
 
     parser.add_argument('-if',
                         '--input_filename',
@@ -63,6 +63,18 @@ def get_args():
                         type=int,
                         default=2)
 
+    parser.add_argument('-hpc',
+                        '--hpc',
+                        help='Add flag if running on an HPC system.',
+                        action='store_true')
+
+    parser.add_argument('-d',
+                        '--date',
+                        help='Date to process',
+                        metavar='str',
+                        type=str,
+                        required=True)
+
     parser.add_argument('-p',
                         '--port',
                         help='Port number on which to run the pipeline',
@@ -96,7 +108,14 @@ def get_args():
 
 # --------------------------------------------------
 def build_containers(dictionary):
-    """Build module containers outlined in YAML file"""
+    """Build module containers outlined in YAML file
+    
+    Input: 
+        - dictionary: Dictionary generated from the YAML file
+    
+    Output: 
+        - Singularity images (SIMG files)
+    """
 
     for k, v in dictionary['modules'].items():
         container = v['container']
@@ -135,6 +154,47 @@ def download_cctools(cctools_version = '7.1.12', architecture = 'x86_64', sys_os
         print('Required CCTools version already exists.')
 
     return '-'.join(['cctools', cctools_version, architecture, sys_os])
+
+
+# --------------------------------------------------
+def download_raw_data(irods_path):
+    """Download raw dataset from CyVerse DataStore
+    
+        Input:
+            - irods_path: CyVerse path to the raw data
+            
+        Output: 
+            - Extracted files from the tarball.
+    """
+
+    args = get_args()
+    file_name = os.path.basename(irods_path)
+    dir_name = file_name.split('.')[0]
+
+    if not os.path.isdir(dir_name):
+        cmd1 = f'iget -fKPVT {irods_path}'
+        print(cmd1)
+        cwd = os.getcwd()
+
+        if '.gz' in file_name: 
+            cmd2 = f'tar -xzvf {file_name}'
+            cmd3 = f'rm {file_name}'
+
+        else: 
+            cmd2 = f'tar -xvf {file_name}'
+            cmd3 = f'rm {file_name}'
+        
+        if args.hpc: 
+            print('>>>>>>Using data transfer node.')
+            sp.call(f"ssh filexfer 'cd {cwd}' '&& {cmd1}' '&& {cmd2}' '&& {cmd3}' '&& exit'", shell=True)
+            
+        else: 
+            sp.call(cmd1, shell=True)
+            sp.call(cmd2, shell=True)
+            sp.call(cmd3, shell=True)
+
+    return dir_name
+
 
 # --------------------------------------------------
 def get_file_list(directory, match_string, level):
@@ -190,7 +250,15 @@ def write_file_list(input_list, out_path='file.txt'):
 
 # --------------------------------------------------
 def get_model_files(seg_model_path, det_model_path):
-    """Download model weights from CyVerse DataStore"""
+    """Download model weights from CyVerse DataStore
+    
+    Input:
+        - seg_model_path: CyVerse path to the segmentation model (.pth file)
+        - det_model_path: CyVerse path to the object detection model (.pth file)
+        
+    Output: 
+        - Downloaded model weight files.
+    """
     
     if not os.path.isfile(os.path.basename(seg_model_path)):
         cmd1 = f'iget -fKPVT {seg_model_path}'
@@ -260,6 +328,8 @@ def run_jx2json(json_out_path, cctools_path, batch_type, manager_name, retries=3
 
     sp.call(cmd1, shell=True)
 
+
+# --------------------------------------------------
 def clean_directory():
 
     if os.path.isfile("dall.log"):
@@ -298,6 +368,12 @@ def main():
         except yaml.YAMLError as exc:
             print(exc)
 
+        cyverse_path = os.path.join(dictionary['paths']['cyverse']['input']['basename'], 
+                                        args.date,
+                                        dictionary['paths']['cyverse']['input']['subdir'], 
+                                        ''.join([str(args.date), str(dictionary['paths']['cyverse']['input']['suffix'])]))
+        dir_name = download_raw_data(cyverse_path)
+ 
         for k, v in dictionary['modules'].items():
             global seg_model_name, det_model_name
             seg_model_name, det_model_name = get_model_files(args.seg_model, args.det_model)
@@ -305,7 +381,8 @@ def main():
             distribution_level = v['distribution_level']
             container = v['container']['simg_name']
 
-            files_list = get_file_list(args.positional, args.input_filename, level=distribution_level)
+            files_list = get_file_list(dir_name, args.input_filename, level=distribution_level)
+            print(files_list)
             write_file_list(files_list)            
             json_out_path = generate_makeflow_json(files_list=files_list, command=v['command'], container=container, yaml=args.yaml)
             run_jx2json(json_out_path, cctools_path, batch_type=args.batch_type, manager_name=args.manager_name, retries=args.retries, port=args.port, out_log=True)
