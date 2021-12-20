@@ -284,7 +284,7 @@ def generate_makeflow_json(files_list, command, container, yaml, n_rules=1, json
     jx_dict = {
         "rules": [
                     {
-                        "command" : command.replace('${PLANT_PATH}', os.path.dirname(file)).replace('${SEG_MODEL_PATH}', seg_model_name),
+                        "command" : command.replace('${PLANT_PATH}', os.path.dirname(file)).replace('${SEG_MODEL_PATH}', seg_model_name).replace('${PLANT_NAME}', os.path.basename(file)).replace('${DET_MODEL_PATH}', det_model_name),
                         # "outputs" : [ file ],
                         "inputs"  : [ file,
                                       container,
