@@ -20,7 +20,7 @@ modules:
       dockerhub_path: docker://phytooracle/dgcnn_single_plant_soil_segmentation_pipeline:latest
     command: singularity run -B $(pwd):/mnt --pwd /mnt dgcnn_single_plant_soil_segmentation_pipeline.simg -p ${PLANT_PATH} --model_path ${SEG_MODEL_PATH} -po segmentation_pointclouds -fo plant_reports -ef ml_crop
     distribution_level: plant
-    out_path: [segmentation_pointclouds, plant_reports]
+    out_path: plant_reports
 
   # 3:
   #   container: 
