@@ -27,7 +27,7 @@ def get_args():
                         help='Filename of input files',
                         metavar='str',
                         type=str,
-                        required=True)
+                        default='combined_multiway_registered.ply')
 
     parser.add_argument('-dl',
                         '--distribution_level',
@@ -308,6 +308,9 @@ def run_jx2json(json_out_path, cctools_path, batch_type, manager_name, retries=3
     Input: 
         - json_out_path: Path to the JSON file containing inputs
         - cctools_path: Path to local installation of CCTools
+
+    Output: 
+        - Running workflow
     '''
 
     home = os.path.expanduser('~')
@@ -327,6 +330,15 @@ def run_jx2json(json_out_path, cctools_path, batch_type, manager_name, retries=3
 
 # --------------------------------------------------
 def clean_directory():
+    '''
+    Cleans directory from distributed pipeline output logs and files lists.
+
+    Input:
+        - NA
+    
+    Output: 
+        - Clean working directory
+    '''
 
     if os.path.isfile("dall.log"):
         os.remove("dall.log")
@@ -349,7 +361,7 @@ def clean_directory():
 
 # --------------------------------------------------
 def main():
-    """Run processing here"""
+    """Run distributed data processing here"""
 
     args = get_args()
     cctools_path = download_cctools()
@@ -382,7 +394,7 @@ def main():
             write_file_list(files_list)            
             json_out_path = generate_makeflow_json(files_list=files_list, command=v['command'], container=container, yaml=args.yaml)
             run_jx2json(json_out_path, cctools_path, batch_type=args.batch_type, manager_name=args.manager_name, retries=args.retries, port=args.port, out_log=True)
-            # clean_directory()
+            clean_directory()
 
 
 # --------------------------------------------------
