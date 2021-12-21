@@ -418,7 +418,7 @@ def main():
                 nodes=dictionary['workload_manager']['nodes'], 
                 number_tasks=dictionary['workload_manager']['number_tasks'], 
                 number_tasks_per_node=dictionary['workload_manager']['numer_tasks_per_node'], 
-                time=dictionary['workload_manager']['time'], 
+                time=dictionary['workload_manager']['time_minutes'], 
 
                 mem_per_cpu=dictionary['workload_manager']['mem_per_cpu'], 
                 manager_name=args.manager_name, 
