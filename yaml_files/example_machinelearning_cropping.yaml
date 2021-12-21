@@ -57,7 +57,7 @@ modules:
 workload_manager:
   account: dukepauli
   partition: standard
-  job_name: po_worker
+  job_name: phytooracle_worker
   nodes: 1
   number_tasks: 1
   numer_tasks_per_node: 1

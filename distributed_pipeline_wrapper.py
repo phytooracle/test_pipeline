@@ -284,7 +284,11 @@ def launch_workers(account, partition, job_name, nodes, number_tasks, number_tas
 
     os.system(f"sbatch {outfile}")
 
+def kill_workers(job_name):
 
+    os.system(f"scancel --name {job_name}")
+
+    
 # --------------------------------------------------
 def generate_makeflow_json(files_list, command, container, inputs, outputs, n_rules=1, json_out_path='wf_file.json'):
     '''
@@ -442,6 +446,8 @@ def main():
             json_out_path = generate_makeflow_json(files_list=files_list, command=v['command'], container=v['container']['simg_name'], inputs=v['inputs'], outputs=v['outputs'])
             run_jx2json(json_out_path, cctools_path, batch_type=args.batch_type, manager_name=args.manager_name, retries=args.retries, port=args.port, out_log=True)
             clean_directory()
+        
+        kill_workers(dictionary['workload_manager']['job_name'])
 
 
 # --------------------------------------------------
