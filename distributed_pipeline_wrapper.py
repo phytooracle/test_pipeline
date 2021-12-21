@@ -268,7 +268,29 @@ def get_model_files(seg_model_path, det_model_path):
 
 # --------------------------------------------------
 def launch_workers(account, partition, job_name, nodes, number_tasks, number_tasks_per_node, time, mem_per_cpu, manager_name, min_worker, max_worker, cores, worker_timeout, outfile='worker.sh'):
+    '''
+    Launches workers on a SLURM workload management system.
+
+    Input:
+        - account: Account to charge compute resources
+        - partition: Either standard or windfall hours
+        - job_name: Name for the job 
+        - nodes: Number of nodes to use per Workqueue factory
+        - number_tasks: Number of tasks per node (usually 1)
+        - number_tasks_per_node: Number of tasks per node (usually 1)
+        - time: Time alloted for job to run 
+        - mem_per_cpu: Memory per CPU (depends on HPC system, units in GB)
+        - manager_name: Name of workflow manager
+        - min_worker: Minimum number of workers per Workqueue factory
+        - max_worker: Maximum number of workers per Workqueue factory
+        - cores: Number of cores per worker
+        - worker_timeout: Time to wait for worker to receive a task before timing out (units in seconds)
+        - outfile: Output filename for SLURM submission script
     
+    Output: 
+        - Running workers on an HPC system
+    '''
+
     with open(outfile, 'w') as fh:
         fh.writelines("#!/bin/bash -l\n")
         fh.writelines(f"#SBATCH --account={account}\n")
@@ -285,6 +307,15 @@ def launch_workers(account, partition, job_name, nodes, number_tasks, number_tas
     os.system(f"sbatch {outfile}")
 
 def kill_workers(job_name):
+    '''
+    Kills workers once workflow has terminated.
+
+    Input:
+        - job_name: Name of the job 
+    
+    Output: 
+        - Kills workers on an HPC system
+    '''
 
     os.system(f"scancel --name {job_name}")
 
