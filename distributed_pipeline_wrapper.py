@@ -98,7 +98,7 @@ def get_args():
                         metavar='det_model',
                         type=str,
                         default='/iplant/home/shared/phytooracle/season_10_lettuce_yr_2020/level_0/necessary_files/detecto_heatmap_lettuce_detection_weights.pth')
-    
+
     return parser.parse_args()
 
 
@@ -402,7 +402,6 @@ def main():
     args = get_args()
     cctools_path = download_cctools()
     clean_directory()
-    launch_workers()
     
     with open(args.yaml, 'r') as stream:
         try:
@@ -412,6 +411,21 @@ def main():
 
         except yaml.YAMLError as exc:
             print(exc)
+            
+        launch_workers(account=dictionary['workload_manager']['account'], 
+                partition=dictionary['workload_manager']['partition'], 
+                job_name=dictionary['workload_manager']['job_name'], 
+                nodes=dictionary['workload_manager']['nodes'], 
+                number_tasks=dictionary['workload_manager']['number_tasks'], 
+                number_tasks_per_node=dictionary['workload_manager']['numer_tasks_per_node'], 
+                time=dictionary['workload_manager']['time'], 
+
+                mem_per_cpu=dictionary['workload_manager']['mem_per_cpu'], 
+                manager_name=args.manager_name, 
+                min_worker=dictionary['workload_manager']['min_worker'], 
+                max_worker=dictionary['workload_manager']['max_worker'], 
+                cores=dictionary['workload_manager']['cores_per_worker'], 
+                worker_timeout=dictionary['workload_manager']['worker_timeout_seconds'])
 
         cyverse_path = os.path.join(dictionary['paths']['cyverse']['input']['basename'], 
                                         args.date,

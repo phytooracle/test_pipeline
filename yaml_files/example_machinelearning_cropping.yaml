@@ -53,7 +53,23 @@ modules:
     outputs: [plant_reports/$PLANT_NAME/level_1_plant_clip.gif,
               plant_reports/$PLANT_NAME/75_ML_compare.gif
               plant_reports/$PLANT_NAME/segmentation_dbscan_compare.gif]
+
+workload_manager:
+  account: dukepauli
+  partition: standard
+  job_name: po_worker
+  nodes: 1
+  number_tasks: 1
+  numer_tasks_per_node: 1
+  time: 24:00:00
   
+  mem_per_cpu: 5
+  manager_name: 
+  min_worker: 100
+  max_worker: 500
+  cores_per_worker: 4
+  worker_timeout_seconds: 
+
 paths:
   pipeline_outpath:
     pointclouds: segmentation_pointclouds #../{date}/{concatenated_tag}/
