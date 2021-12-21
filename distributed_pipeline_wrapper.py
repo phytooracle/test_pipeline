@@ -303,7 +303,7 @@ def generate_makeflow_json(files_list, command, container, inputs, outputs, n_ru
         - json_out_path: Path to the resulting JSON file
     '''
     if inputs:
-        print(inputs)
+
         jx_dict = {
             "rules": [
                         {
@@ -312,7 +312,7 @@ def generate_makeflow_json(files_list, command, container, inputs, outputs, n_ru
                             "inputs"  : [file, 
                                         container, 
                                         seg_model_name, 
-                                        det_model_name] + inputs
+                                        det_model_name] + [input.replace('$PLANT_NAME', os.path.basename(os.path.dirname(file))) for input in inputs]
 
                         } for file in  files_list
                     ]
