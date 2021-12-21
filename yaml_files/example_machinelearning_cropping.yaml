@@ -1,23 +1,23 @@
 ---
 tags:
-  pipeline: polynomial_cropping
-  description: ct_032_eps007 #dev
-  notes: Initial development of polynomial cropping approach.
+  pipeline: machinelearning_cropping
+  description: conf_05_fix
+  notes: Initial development of machine learning (ML)-based cropping approach.
   runby: Emmanuel Miguel Gonzalez
 
 modules:
   1:
     container:
-      simg_name: polynomial_surface_fitting_s10.simg
-      dockerhub_path: docker://phytooracle/polynomial_surface_fitting_s10:latest
-    command: singularity run -B $(pwd):/mnt --pwd /mnt polynomial_surface_fitting_s10.simg -p ${PLANT_PATH} -c -po segmentation_pointclouds -fo plant_reports -ct 0.32
+      simg_name: heatmap_ml_based_cropping.simg
+      dockerhub_path: docker://phytooracle/heatmap_ml_based_cropping:latest
+    command: singularity run -B $(pwd):/mnt --pwd /mnt heatmap_ml_based_cropping.simg -p ${PLANT_PATH} -m ${DET_MODEL_PATH} -c 0.5
 
 
   2:
     container: 
       simg_name: dgcnn_single_plant_soil_segmentation_pipeline.simg
       dockerhub_path: docker://phytooracle/dgcnn_single_plant_soil_segmentation_pipeline:latest
-    command: singularity run -B $(pwd):/mnt --pwd /mnt dgcnn_single_plant_soil_segmentation_pipeline.simg -p ${PLANT_PATH} --model_path ${SEG_MODEL_PATH} -po segmentation_pointclouds -fo plant_reports -ef poly_crop
+    command: singularity run -B $(pwd):/mnt --pwd /mnt dgcnn_single_plant_soil_segmentation_pipeline.simg -p ${PLANT_PATH} --model_path ${SEG_MODEL_PATH} -po segmentation_pointclouds -fo plant_reports -ef ml_crop
 
   3:
     container: 
