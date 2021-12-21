@@ -265,6 +265,7 @@ def get_model_files(seg_model_path, det_model_path):
 
     return os.path.basename(seg_model_path), os.path.basename(det_model_path) 
 
+
 # --------------------------------------------------
 def generate_makeflow_json(files_list, command, container, outputs, n_rules=1, json_out_path='wf_file.json'):
     '''
@@ -297,60 +298,6 @@ def generate_makeflow_json(files_list, command, container, outputs, n_rules=1, j
         convert_file.write(json.dumps(jx_dict))
 
     return json_out_path
-
-
-# # --------------------------------------------------
-# def generate_makeflow_json(files_list, yaml_dict, n_rules=1, json_out_path='wf_file.json'):
-#     '''
-#     Generate Makeflow JSON file to distribute tasks. 
-
-#     Input: 
-#         - files_list: Either files or subdirectory list
-#         - n_rules: Number of rules per JSON file
-#         - json_out_path: Path to the resulting JSON file
-
-#     Output:
-#         - json_out_path: Path to the resulting JSON file
-#     '''
-
-#     outpath_list = []
-#     input_list = []
-#     command_list = []
-
-#     for k, v in yaml_dict['modules'].items():
-#         container = v['container']['simg_name']
-#         command = v['command']
-#         outpath = v['out_path']
-
-#         if type(outpath) == list:
-#             for item in outpath:
-#                 outpath_list.append(item)
-#         else:
-#             outpath_list.append(outpath)
-        
-#         out_paths = list(set(outpath_list))
-
-#         input_list.append(container)
-#         command_list.append(command)
-
-#     input_list.append(seg_model_name)
-#     input_list.append(det_model_name)
-
-#     jx_dict = {
-#         "rules": [
-#                     {
-#                         "command" : command.replace('${PLANT_PATH}', os.path.dirname(file)).replace('${SEG_MODEL_PATH}', seg_model_name).replace('${PLANT_NAME}', os.path.basename(os.path.dirname(file))).replace('${DET_MODEL_PATH}', det_model_name),
-#                         "outputs" : [os.path.join(out_path, os.path.basename(os.path.dirname(file))) for out_path in outpath_list],
-#                         "inputs"  : [ file ] + input_list
-
-#                     } for file in  files_list
-#                 for command in command_list ]
-#     } 
-        
-#     with open(json_out_path, 'w') as convert_file:
-#         convert_file.write(json.dumps(jx_dict))
-
-#     return json_out_path
 
 
 # --------------------------------------------------
