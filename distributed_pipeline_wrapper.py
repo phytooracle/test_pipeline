@@ -267,7 +267,7 @@ def get_model_files(seg_model_path, det_model_path):
 
 
 # --------------------------------------------------
-def generate_makeflow_json(files_list, command, container, yaml, out_path, n_rules=1, json_out_path='wf_file.json'):
+def generate_makeflow_json(files_list, yaml_dict, n_rules=1, json_out_path='wf_file.json'):
     '''
     Generate Makeflow JSON file to distribute tasks. 
 
@@ -280,20 +280,41 @@ def generate_makeflow_json(files_list, command, container, yaml, out_path, n_rul
         - json_out_path: Path to the resulting JSON file
     '''
 
+    outpath_list = []
+    input_list = []
+    command_list = []
+
+    for k, v in yaml_dict['modules'].items():
+        container = v['container']['simg_name']
+        command = v['command']
+        outpath = v['out_path']
+
+        if type(outpath) == list:
+            for item in outpath:
+                outpath_list.append(item)
+        else:
+            outpath_list.append(outpath)
+        
+        out_paths = list(set(outpath_list))
+
+        input_list.append(container)
+        command_list.append(command)
+
+    input_list.append(seg_model_name)
+    input_list.append(det_model_name)
+
+
     jx_dict = {
         "rules": [
                     {
                         "command" : command.replace('${PLANT_PATH}', os.path.dirname(file)).replace('${SEG_MODEL_PATH}', seg_model_name).replace('${PLANT_NAME}', os.path.basename(os.path.dirname(file))).replace('${DET_MODEL_PATH}', det_model_name),
-                        "outputs" : [ os.path.join(out_path, os.path.basename(os.path.dirname(file))) ],
-                        "inputs"  : [ file,
-                                      container,
-                                      seg_model_name, 
-                                      det_model_name ]
+                        "outputs" : [os.path.join(out_path, os.path.basename(os.path.dirname(file))) for out_path in outpath_list],
+                        "inputs"  : [ file ] + input_list
 
                     } for file in  files_list
-                ]
+                for command in command_list ]
     } 
-    
+        
     with open(json_out_path, 'w') as convert_file:
         convert_file.write(json.dumps(jx_dict))
 
@@ -381,20 +402,25 @@ def main():
                                         dictionary['paths']['cyverse']['input']['subdir'], 
                                         ''.join([str(args.date), str(dictionary['paths']['cyverse']['input']['suffix'])]))
         dir_name = download_raw_data(cyverse_path)
- 
-        for k, v in dictionary['modules'].items():
-            global seg_model_name, det_model_name
-            seg_model_name, det_model_name = get_model_files(args.seg_model, args.det_model)
+        global seg_model_name, det_model_name
+        seg_model_name, det_model_name = get_model_files(args.seg_model, args.det_model)
 
-            distribution_level = v['distribution_level']
-            container = v['container']['simg_name']
-            out_path = v['out_path']
+        files_list = get_file_list(dir_name, args.input_filename, level=args.distribution_level)
+        write_file_list(files_list) 
+        json_out_path = generate_makeflow_json(files_list=files_list, yaml_dict=dictionary)
+        run_jx2json(json_out_path, cctools_path, batch_type=args.batch_type, manager_name=args.manager_name, retries=args.retries, port=args.port, out_log=True)
 
-            files_list = get_file_list(dir_name, args.input_filename, level=distribution_level)
-            write_file_list(files_list)            
-            json_out_path = generate_makeflow_json(files_list=files_list, command=v['command'], container=container, yaml=args.yaml, out_path=out_path)
-            run_jx2json(json_out_path, cctools_path, batch_type=args.batch_type, manager_name=args.manager_name, retries=args.retries, port=args.port, out_log=True)
-            clean_directory()
+        # for k, v in dictionary['modules'].items():
+            
+        #     distribution_level = v['distribution_level']
+        #     container = v['container']['simg_name']
+        #     out_path = v['out_path']
+
+        #     files_list = get_file_list(dir_name, args.input_filename, level=distribution_level)
+        #     write_file_list(files_list)            
+        #     json_out_path = generate_makeflow_json(files_list=files_list, command=v['command'], container=container, yaml=args.yaml, out_path=out_path)
+        #     run_jx2json(json_out_path, cctools_path, batch_type=args.batch_type, manager_name=args.manager_name, retries=args.retries, port=args.port, out_log=True)
+        #     clean_directory()
 
 
 # --------------------------------------------------
