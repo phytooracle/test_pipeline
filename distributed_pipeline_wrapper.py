@@ -267,7 +267,7 @@ def get_model_files(seg_model_path, det_model_path):
 
 
 # --------------------------------------------------
-def generate_makeflow_json(files_list, command, container, outputs, n_rules=1, json_out_path='wf_file.json'):
+def generate_makeflow_json(files_list, command, container, inputs, outputs, n_rules=1, json_out_path='wf_file.json'):
     '''
     Generate Makeflow JSON file to distribute tasks. 
 
@@ -279,20 +279,37 @@ def generate_makeflow_json(files_list, command, container, outputs, n_rules=1, j
     Output:
         - json_out_path: Path to the resulting JSON file
     '''
+    if inputs:
+        print(inputs)
+        jx_dict = {
+            "rules": [
+                        {
+                            "command" : command.replace('${PLANT_PATH}', os.path.dirname(file)).replace('${SEG_MODEL_PATH}', seg_model_name).replace('${PLANT_NAME}', os.path.basename(os.path.dirname(file))).replace('${DET_MODEL_PATH}', det_model_name),
+                            "outputs" : [out.replace('$PLANT_NAME', os.path.basename(os.path.dirname(file))) for out in outputs],
+                            "inputs"  : [file, 
+                                        container, 
+                                        seg_model_name, 
+                                        det_model_name] + inputs
 
-    jx_dict = {
-        "rules": [
-                    {
-                        "command" : command.replace('${PLANT_PATH}', os.path.dirname(file)).replace('${SEG_MODEL_PATH}', seg_model_name).replace('${PLANT_NAME}', os.path.basename(os.path.dirname(file))).replace('${DET_MODEL_PATH}', det_model_name),
-                        "outputs" : [out.replace('$PLANT_NAME', os.path.basename(os.path.dirname(file))) for out in outputs],
-                        "inputs"  : [file, 
-                                     container, 
-                                     seg_model_name, 
-                                     det_model_name]
+                        } for file in  files_list
+                    ]
+        } 
 
-                    } for file in  files_list
-                ]
-    } 
+    else: 
+        
+        jx_dict = {
+            "rules": [
+                        {
+                            "command" : command.replace('${PLANT_PATH}', os.path.dirname(file)).replace('${SEG_MODEL_PATH}', seg_model_name).replace('${PLANT_NAME}', os.path.basename(os.path.dirname(file))).replace('${DET_MODEL_PATH}', det_model_name),
+                            "outputs" : [out.replace('$PLANT_NAME', os.path.basename(os.path.dirname(file))) for out in outputs],
+                            "inputs"  : [file, 
+                                        container, 
+                                        seg_model_name, 
+                                        det_model_name]
+
+                        } for file in  files_list
+                    ]
+        } 
         
     with open(json_out_path, 'w') as convert_file:
         convert_file.write(json.dumps(jx_dict))
@@ -388,7 +405,7 @@ def main():
 
             files_list = get_file_list(dir_name, args.input_filename, level=v['distribution_level'])
             write_file_list(files_list)            
-            json_out_path = generate_makeflow_json(files_list=files_list, command=v['command'], container=v['container']['simg_name'], outputs=v['outputs'])
+            json_out_path = generate_makeflow_json(files_list=files_list, command=v['command'], container=v['container']['simg_name'], inputs=v['inputs'], outputs=v['outputs'])
             run_jx2json(json_out_path, cctools_path, batch_type=args.batch_type, manager_name=args.manager_name, retries=args.retries, port=args.port, out_log=True)
             clean_directory()
 

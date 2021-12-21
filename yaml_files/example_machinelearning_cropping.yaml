@@ -12,6 +12,7 @@ modules:
       dockerhub_path: docker://phytooracle/heatmap_ml_based_cropping:latest
     command: singularity run -B $(pwd):/mnt --pwd /mnt heatmap_ml_based_cropping.simg -p ${PLANT_PATH} -m ${DET_MODEL_PATH} -c 0.5
     distribution_level: plant
+    inputs: 
     outputs: [segmentation_pointclouds/$PLANT_NAME/ml_crop.ply,
               plant_reports/$PLANT_NAME/heatmap.jpg,
               plant_reports/$PLANT_NAME/identificaiton.jpg]
@@ -22,6 +23,8 @@ modules:
       dockerhub_path: docker://phytooracle/dgcnn_single_plant_soil_segmentation_pipeline:latest
     command: singularity run -B $(pwd):/mnt --pwd /mnt dgcnn_single_plant_soil_segmentation_pipeline.simg -p ${PLANT_PATH} --model_path ${SEG_MODEL_PATH} -po segmentation_pointclouds -fo plant_reports -ef ml_crop
     distribution_level: plant
+    inputs: [segmentation_pointclouds/$PLANT_NAME/,
+             plant_reports/$PLANT_NAME/]
     outputs: [segmentation_pointclouds/$PLANT_NAME/segmentation_plant.ply, 
               segmentation_pointclouds/$PLANT_NAME/segmentation_soil.ply,
               segmentation_pointclouds/$PLANT_NAME/soil_segmentation.npy,
@@ -34,6 +37,8 @@ modules:
       dockerhub_path: docker://phytooracle/3d_neighbor_removal:latest
     command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_neighbor_removal.simg -plant ${PLANT_NAME} -e 0.07 -pod segmentation_pointclouds -fod plant_reports
     distribution_level: plant
+    inputs: [segmentation_pointclouds/$PLANT_NAME/,
+             plant_reports/$PLANT_NAME/]
     outputs: [plant_reports/$PLANT_NAME/final.gif, 
               segmentation_pointclouds/$PLANT_NAME/final.ply]
   
@@ -43,6 +48,8 @@ modules:
       dockerhub_path: docker://phytooracle/3d_segmentation_dashboard_assets:latest
     command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_segmentation_dashboard_assets.simg -i ${PLANT_PATH} -plant ${PLANT_NAME} -pod segmentation_pointclouds -fod plant_reports
     distribution_level: plant
+    inputs: [segmentation_pointclouds/$PLANT_NAME/,
+             plant_reports/$PLANT_NAME/]
     outputs: [plant_reports/$PLANT_NAME/level_1_plant_clip.gif,
               plant_reports/$PLANT_NAME/75_ML_compare.gif
               plant_reports/$PLANT_NAME/segmentation_dbscan_compare.gif]
