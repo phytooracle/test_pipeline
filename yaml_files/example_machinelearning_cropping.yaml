@@ -47,7 +47,6 @@ modules:
               plant_reports/$PLANT_NAME/75_ML_compare.gif
               plant_reports/$PLANT_NAME/segmentation_dbscan_compare.gif]
   
-
 paths:
   pipeline_outpath:
     pointclouds: segmentation_pointclouds #../{date}/{concatenated_tag}/
