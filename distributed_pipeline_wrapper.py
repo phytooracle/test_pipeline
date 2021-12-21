@@ -269,7 +269,7 @@ def get_model_files(seg_model_path, det_model_path):
 # --------------------------------------------------
 def launch_workers(account, partition, job_name, nodes, number_tasks, number_tasks_per_node, time, mem_per_cpu, manager_name, min_worker, max_worker, cores, worker_timeout, outfile='worker.sh'):
     
-    with open(outfile) as fh:
+    with open(outfile, 'w') as fh:
         fh.writelines("#!/bin/bash -l\n")
         fh.writelines(f"#SBATCH --account={account}\n")
         fh.writelines(f"#SBATCH --partition={partition}\n")
@@ -411,7 +411,7 @@ def main():
 
         except yaml.YAMLError as exc:
             print(exc)
-            
+
         launch_workers(account=dictionary['workload_manager']['account'], 
                 partition=dictionary['workload_manager']['partition'], 
                 job_name=dictionary['workload_manager']['job_name'], 
