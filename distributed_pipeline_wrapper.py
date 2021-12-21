@@ -267,6 +267,25 @@ def get_model_files(seg_model_path, det_model_path):
 
 
 # --------------------------------------------------
+def launch_workers(account, partition, job_name, nodes, number_tasks, number_tasks_per_node, time, mem_per_cpu, manager_name, min_worker, max_worker, cores, worker_timeout, outfile='worker.sh'):
+    
+    with open(outfile) as fh:
+        fh.writelines("#!/bin/bash -l\n")
+        fh.writelines(f"#SBATCH --account={account}\n")
+        fh.writelines(f"#SBATCH --partition={partition}\n")
+        fh.writelines(f"#SBATCH --job-name={job_name}\n")
+        fh.writelines(f"#SBATCH --nodes={nodes}\n")
+        fh.writelines(f"#SBATCH --ntasks={number_tasks}\n")
+        fh.writelines(f"#SBATCH --ntasks-per-node={number_tasks_per_node}\n")
+        fh.writelines(f"#SBATCH --time={time}\n")
+        fh.writelines("export CCTOOLS_HOME=${HOME}/cctools-7.1.12-x86_64-centos7")
+        fh.writelines("export PATH=${CCTOOLS_HOME}/bin:$PATH")
+        fh.writelines(f"${HOME}/cctools-7.1.12-x86_64-centos7/bin/work_queue_factory -T slurm -B '--account={account} --partition={partition} --job-name={job_name} --time={time} --mem-per-cpu={mem_per_cpu}GB' -M {manager_name} -w {min_worker} -W {max_worker} --workers-per-cycle 0 --cores={cores} -t {worker_timeout}")
+
+    os.system(f"sbatch {outfile}")
+
+
+# --------------------------------------------------
 def generate_makeflow_json(files_list, command, container, inputs, outputs, n_rules=1, json_out_path='wf_file.json'):
     '''
     Generate Makeflow JSON file to distribute tasks. 
@@ -383,6 +402,7 @@ def main():
     args = get_args()
     cctools_path = download_cctools()
     clean_directory()
+    launch_workers()
     
     with open(args.yaml, 'r') as stream:
         try:
