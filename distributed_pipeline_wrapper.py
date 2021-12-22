@@ -333,6 +333,12 @@ def generate_makeflow_json(files_list, command, container, inputs, outputs, n_ru
     Output:
         - json_out_path: Path to the resulting JSON file
     '''
+    existing_file_list = []
+
+    for file in files_list:
+        if os.path.isfile(file):
+            existing_file_list.append(file)
+
     if inputs:
 
         jx_dict = {
@@ -345,7 +351,7 @@ def generate_makeflow_json(files_list, command, container, inputs, outputs, n_ru
                                         seg_model_name, 
                                         det_model_name] + [input.replace('$PLANT_NAME', os.path.basename(os.path.dirname(file))) for input in inputs]
 
-                        } for file in  files_list
+                        } for file in  existing_file_list
                     ]
         } 
 
@@ -361,7 +367,7 @@ def generate_makeflow_json(files_list, command, container, inputs, outputs, n_ru
                                         seg_model_name, 
                                         det_model_name]
 
-                        } for file in  files_list
+                        } for file in  existing_file_list
                     ]
         } 
         
@@ -446,6 +452,8 @@ def main():
 
         except yaml.YAMLError as exc:
             print(exc)
+        
+        kill_workers(dictionary['workload_manager']['job_name'])
 
         launch_workers(account=dictionary['workload_manager']['account'], 
                 partition=dictionary['workload_manager']['partition'], 
