@@ -12,7 +12,7 @@ from typing_extensions import final
 import json
 import subprocess as sp
 import yaml
-
+import shutil
 
 # --------------------------------------------------
 def get_args():
@@ -491,6 +491,18 @@ def clean_directory():
 
     if os.path.isfile("wf_file.json.wqlog.tr"):
         os.remove("wf_file.json.wqlog.tr")
+
+    if os.path.isdir('alignment'):
+        shutil.rmtree('alignment')
+    
+    if os.path.isfile('transfromation.json'):
+        os.remove('transfromation.json')
+    
+    if os.path.isdir('bundle'):
+        shutil.rmtree('bundle')
+
+    if os.path.isfile('bundle_list.json'):
+        os.remove('bundle_list.json')
     
 
 # --------------------------------------------------
@@ -527,22 +539,22 @@ def main():
                 cores=dictionary['workload_manager']['cores_per_worker'], 
                 worker_timeout=dictionary['workload_manager']['worker_timeout_seconds'])
 
-        cyverse_path = os.path.join(dictionary['paths']['cyverse']['input']['basename'], 
-                                        args.date,
-                                        dictionary['paths']['cyverse']['input']['subdir'], 
-                                        ''.join([str(args.date), str(dictionary['paths']['cyverse']['input']['suffix'])]))
+        # cyverse_path = os.path.join(dictionary['paths']['cyverse']['input']['basename'], 
+        #                                 args.date,
+        #                                 dictionary['paths']['cyverse']['input']['subdir'], 
+        #                                 ''.join([str(args.date), str(dictionary['paths']['cyverse']['input']['suffix'])]))
                                         
-        dir_name = download_raw_data(cyverse_path)
+        # dir_name = download_raw_data(cyverse_path)
         global seg_model_name, det_model_name
         seg_model_name, det_model_name = get_model_files(args.seg_model, args.det_model)
 
         for k, v in dictionary['modules'].items():
             
-            irods_data_path = os.path.join(level_1, args.date, 'alignment')
-
             if dictionary['tags']['sensor']=='scanner3DTop':
+                
                 cwd = os.getcwd()
                 level_1 = dictionary['paths']['cyverse']['input']['basename']
+                irods_data_path = os.path.join(level_1, args.date, 'alignment')
                 if not os.path.isdir('alignment'):
                     download_level_1_data(irods_data_path)
                 if not os.path.isfile('transfromation.json'):
