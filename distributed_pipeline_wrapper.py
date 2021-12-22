@@ -532,7 +532,7 @@ def main():
         except yaml.YAMLError as exc:
             print(exc)
         
-        # kill_workers(dictionary['workload_manager']['job_name'])
+        kill_workers(dictionary['workload_manager']['job_name'])
 
         launch_workers(account=dictionary['workload_manager']['account'], 
                 partition=dictionary['workload_manager']['partition'], 
