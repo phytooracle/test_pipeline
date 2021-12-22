@@ -576,8 +576,7 @@ def main():
         for k, v in dictionary['modules'].items():
             level_1 = dictionary['paths']['cyverse']['input']['basename']
             # dir_name = os.path.join('alignment', 'west')
-            input_list = v['input_dir'].split(",")
-            dir_name = os.path.join(*input_list)
+            dir_name = os.path.join(*v['input_dir'])
             if dictionary['tags']['sensor']=='scanner3DTop':
                 cwd = os.getcwd()
                 irods_data_path = os.path.join(level_1, args.date, 'alignment')
