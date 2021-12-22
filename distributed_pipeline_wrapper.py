@@ -404,6 +404,7 @@ def generate_makeflow_json(files_list, command, container, inputs, outputs, date
     Output:
         - json_out_path: Path to the resulting JSON file
     '''
+    print(files_list)
     existing_file_list = []
 
     for file in files_list:
