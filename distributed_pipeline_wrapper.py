@@ -405,7 +405,7 @@ def generate_makeflow_json(files_list, command, container, inputs, outputs, date
     Output:
         - json_out_path: Path to the resulting JSON file
     '''
-    files_list = [file.replace('-west.ply', '').replace('-east.ply', '').replace('-merged.ply', '') for file in files_list]
+    files_list = [file.replace('-west.ply', '*').replace('-east.ply', '*').replace('-merged.ply', '*') for file in files_list]
 
     if inputs:
 
