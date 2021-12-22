@@ -27,7 +27,8 @@ def get_args():
                         help='Filename of input files',
                         metavar='str',
                         type=str,
-                        default='combined_multiway_registered.ply')
+                        default='.ply')
+                        # default='combined_multiway_registered.ply')
 
     parser.add_argument('-dl',
                         '--distribution_level',
@@ -192,7 +193,7 @@ def download_raw_data(irods_path):
 
 
 # --------------------------------------------------
-def get_file_list(directory, match_string='.ply', level):
+def get_file_list(directory, level, match_string='.ply'):
     '''
     Walks through a given directory and grabs all files with the given search string.
 
@@ -576,14 +577,14 @@ def main():
                 if not os.path.isfile('gcp_season_10.txt'):
                     get_gcp_file()
 
-                files_list = get_file_list(dir_name, args.input_filename, level=v['distribution_level'])
+                files_list = get_file_list(dir_name, level=v['distribution_level'], match_string=args.input_filename,)
                 files_list = [os.path.basename(file) for file in files_list]
                 write_file_list(files_list)
                 json_out_path = generate_makeflow_json(files_list=files_list, command=v['command'], container=v['container']['simg_name'], inputs=v['inputs'], outputs=v['outputs'], date=args.date)
                 run_jx2json(json_out_path, cctools_path, batch_type=args.batch_type, manager_name=args.manager_name, retries=args.retries, port=args.port, out_log=True)
                 clean_directory()
 
-            # files_list = get_file_list(dir_name, args.input_filename, level=v['distribution_level'])
+            # files_list = get_file_list(dir_name, level=v['distribution_level'], match_string=args.input_filename)
             # write_file_list(files_list)            
             # json_out_path = generate_makeflow_json(files_list=files_list, command=v['command'], container=v['container']['simg_name'], inputs=v['inputs'], outputs=v['outputs'])
             # run_jx2json(json_out_path, cctools_path, batch_type=args.batch_type, manager_name=args.manager_name, retries=args.retries, port=args.port, out_log=True)
