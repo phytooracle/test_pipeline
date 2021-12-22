@@ -406,7 +406,7 @@ def generate_makeflow_json(files_list, command, container, inputs, outputs, date
         - json_out_path: Path to the resulting JSON file
     '''
     files_list = [file.split('-')[:-1] for file in files_list]
-    
+
     if inputs:
 
         jx_dict = {
@@ -535,20 +535,20 @@ def main():
         
         kill_workers(dictionary['workload_manager']['job_name'])
 
-        launch_workers(account=dictionary['workload_manager']['account'], 
-                partition=dictionary['workload_manager']['partition'], 
-                job_name=dictionary['workload_manager']['job_name'], 
-                nodes=dictionary['workload_manager']['nodes'], 
-                number_tasks=dictionary['workload_manager']['number_tasks'], 
-                number_tasks_per_node=dictionary['workload_manager']['numer_tasks_per_node'], 
-                time=dictionary['workload_manager']['time_minutes'], 
+        # launch_workers(account=dictionary['workload_manager']['account'], 
+        #         partition=dictionary['workload_manager']['partition'], 
+        #         job_name=dictionary['workload_manager']['job_name'], 
+        #         nodes=dictionary['workload_manager']['nodes'], 
+        #         number_tasks=dictionary['workload_manager']['number_tasks'], 
+        #         number_tasks_per_node=dictionary['workload_manager']['numer_tasks_per_node'], 
+        #         time=dictionary['workload_manager']['time_minutes'], 
 
-                mem_per_cpu=dictionary['workload_manager']['mem_per_cpu'], 
-                manager_name=args.manager_name, 
-                min_worker=dictionary['workload_manager']['min_worker'], 
-                max_worker=dictionary['workload_manager']['max_worker'], 
-                cores=dictionary['workload_manager']['cores_per_worker'], 
-                worker_timeout=dictionary['workload_manager']['worker_timeout_seconds'])
+        #         mem_per_cpu=dictionary['workload_manager']['mem_per_cpu'], 
+        #         manager_name=args.manager_name, 
+        #         min_worker=dictionary['workload_manager']['min_worker'], 
+        #         max_worker=dictionary['workload_manager']['max_worker'], 
+        #         cores=dictionary['workload_manager']['cores_per_worker'], 
+        #         worker_timeout=dictionary['workload_manager']['worker_timeout_seconds'])
 
         # cyverse_path = os.path.join(dictionary['paths']['cyverse']['input']['basename'], 
         #                                 args.date,
