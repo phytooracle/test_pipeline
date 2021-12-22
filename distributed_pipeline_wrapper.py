@@ -592,7 +592,7 @@ def main():
                 if not os.path.isfile('gcp_season_10.txt'):
                     get_gcp_file()
 
-                files_list = get_file_list(dir_name, level=v['distribution_level'], match_string=args.input_filename,)
+                files_list = get_file_list(dir_name, level=v['distribution_level'], match_string=v['input_file'])
                 write_file_list(files_list)
                 json_out_path = generate_makeflow_json(files_list=files_list, command=v['command'], container=v['container']['simg_name'], inputs=v['inputs'], outputs=v['outputs'], date=args.date, sensor=dictionary['tags']['sensor'])
                 run_jx2json(json_out_path, cctools_path, batch_type=args.batch_type, manager_name=args.manager_name, retries=args.retries, port=args.port, out_log=True)
