@@ -411,6 +411,8 @@ def generate_makeflow_json(files_list, command, container, inputs, outputs, date
         if os.path.isfile(file):
             existing_file_list.append(file)
 
+    print(existing_file_list)
+
     if inputs:
 
         jx_dict = {
@@ -442,7 +444,7 @@ def generate_makeflow_json(files_list, command, container, inputs, outputs, date
                         } for file in  existing_file_list
                     ]
         } 
-    print(jx_dict)
+
     with open(json_out_path, 'w') as convert_file:
         convert_file.write(json.dumps(jx_dict))
 
