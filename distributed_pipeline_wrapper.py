@@ -535,20 +535,20 @@ def main():
         
         kill_workers(dictionary['workload_manager']['job_name'])
 
-        # launch_workers(account=dictionary['workload_manager']['account'], 
-        #         partition=dictionary['workload_manager']['partition'], 
-        #         job_name=dictionary['workload_manager']['job_name'], 
-        #         nodes=dictionary['workload_manager']['nodes'], 
-        #         number_tasks=dictionary['workload_manager']['number_tasks'], 
-        #         number_tasks_per_node=dictionary['workload_manager']['numer_tasks_per_node'], 
-        #         time=dictionary['workload_manager']['time_minutes'], 
+        launch_workers(account=dictionary['workload_manager']['account'], 
+                partition=dictionary['workload_manager']['partition'], 
+                job_name=dictionary['workload_manager']['job_name'], 
+                nodes=dictionary['workload_manager']['nodes'], 
+                number_tasks=dictionary['workload_manager']['number_tasks'], 
+                number_tasks_per_node=dictionary['workload_manager']['numer_tasks_per_node'], 
+                time=dictionary['workload_manager']['time_minutes'], 
 
-        #         mem_per_cpu=dictionary['workload_manager']['mem_per_cpu'], 
-        #         manager_name=args.manager_name, 
-        #         min_worker=dictionary['workload_manager']['min_worker'], 
-        #         max_worker=dictionary['workload_manager']['max_worker'], 
-        #         cores=dictionary['workload_manager']['cores_per_worker'], 
-        #         worker_timeout=dictionary['workload_manager']['worker_timeout_seconds'])
+                mem_per_cpu=dictionary['workload_manager']['mem_per_cpu'], 
+                manager_name=args.manager_name, 
+                min_worker=dictionary['workload_manager']['min_worker'], 
+                max_worker=dictionary['workload_manager']['max_worker'], 
+                cores=dictionary['workload_manager']['cores_per_worker'], 
+                worker_timeout=dictionary['workload_manager']['worker_timeout_seconds'])
 
         # cyverse_path = os.path.join(dictionary['paths']['cyverse']['input']['basename'], 
         #                                 args.date,
@@ -579,11 +579,10 @@ def main():
                     get_gcp_file()
 
                 files_list = get_file_list(dir_name, level=v['distribution_level'], match_string=args.input_filename,)
-                # files_list = [os.path.basename(file) for file in files_list]
                 write_file_list(files_list)
                 json_out_path = generate_makeflow_json(files_list=files_list, command=v['command'], container=v['container']['simg_name'], inputs=v['inputs'], outputs=v['outputs'], date=args.date)
-                # run_jx2json(json_out_path, cctools_path, batch_type=args.batch_type, manager_name=args.manager_name, retries=args.retries, port=args.port, out_log=True)
-                # clean_directory()
+                run_jx2json(json_out_path, cctools_path, batch_type=args.batch_type, manager_name=args.manager_name, retries=args.retries, port=args.port, out_log=True)
+                clean_directory()
 
             # files_list = get_file_list(dir_name, level=v['distribution_level'], match_string=args.input_filename)
             # write_file_list(files_list)            
