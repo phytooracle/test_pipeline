@@ -46,7 +46,8 @@ modules:
       dockerhub_path: docker://phytooracle/3d_segmentation_dashboard_assets:latest
     command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_segmentation_dashboard_assets.simg -i ${PLANT_PATH} -plant ${PLANT_NAME} -pod segmentation_pointclouds -fod plant_reports
     distribution_level: plant
-    inputs: [segmentation_pointclouds/$PLANT_NAME/]
+    inputs: [plant_reports/$PLANT_NAME/, 
+             segmentation_pointclouds/$PLANT_NAME/]
     outputs: [plant_reports/$PLANT_NAME/level_1_plant_clip.gif,
               plant_reports/$PLANT_NAME/75_ML_compare.gif,
               plant_reports/$PLANT_NAME/segmentation_dbscan_compare.gif]
