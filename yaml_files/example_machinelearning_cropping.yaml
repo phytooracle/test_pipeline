@@ -15,7 +15,12 @@ modules:
     command: singularity run 3d_postprocessing.simg -i alignment/ -o postprocessing_out -f ${SUBDIR} -t transfromation.json -p stereoTop_full_season_clustering.csv -s 10 -d ${DATE} -l gcp_season_10.txt
     distribution_level: directory
     inputs: []
-    outputs: []
+    outputs: [postprocessing_out/east/$SUBDIR,
+              postprocessing_out/east_downsampled/$SUBDIR, 
+              postprocessing_out/merged/$SUBDIR,
+              postprocessing_out/merged_downsampled/$SUBDIR,
+              postprocessing_out/west/$SUBDIR,
+              postprocessing_out/west_downsampled/$SUBDIR]
   
   # 2: 
   #   container: 
