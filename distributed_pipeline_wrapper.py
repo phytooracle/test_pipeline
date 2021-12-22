@@ -549,11 +549,10 @@ def main():
         seg_model_name, det_model_name = get_model_files(args.seg_model, args.det_model)
 
         for k, v in dictionary['modules'].items():
-            
+            level_1 = dictionary['paths']['cyverse']['input']['basename']
+
             if dictionary['tags']['sensor']=='scanner3DTop':
-                
                 cwd = os.getcwd()
-                level_1 = dictionary['paths']['cyverse']['input']['basename']
                 irods_data_path = os.path.join(level_1, args.date, 'alignment')
                 if not os.path.isdir('alignment'):
                     download_level_1_data(irods_data_path)
