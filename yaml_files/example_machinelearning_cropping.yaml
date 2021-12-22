@@ -36,16 +36,20 @@ modules:
     container: 
       simg_name: 3d_crop_individual_plants.simg
       dockerhub_path: docker://phytooracle/3d_crop_individual_plants:latest
-    command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_crop_individual_plants.simg -i postprocessing_out/ -p stereoTop_full_season_clustering.csv -f ${SUBDIR} -o individual_plants_out -s 10 -d ${DATE}
+    command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_crop_individual_plants.simg -i postprocessing_out/ -p stereoTop_full_season_clustering.csv -f ${SUBDIR} -o individual_plants_out -s 10 -d ${DATE} && tar -cvf ${SUBDIR}_individual_plants.tar individual_plants_out/
     distribution_level: plant
     input_dir: [postprocessing_out, west]
     input_file: -west.ply
-    inputs: [postprocessing_out/east/$SUBDIR-east.ply,
+    inputs: [transfromation.json,
+             stereoTop_full_season_clustering.csv,
+             gcp_season_10.txt,
+             postprocessing_out/east/$SUBDIR-east.ply,
              postprocessing_out/east_downsampled/$SUBDIR-east.ply, 
              postprocessing_out/merged/$SUBDIR-merged.ply,
              postprocessing_out/merged_downsampled/$SUBDIR-merged.ply,
              postprocessing_out/west/$SUBDIR-west.ply,
              postprocessing_out/west_downsampled/$SUBDIR-west.ply]
+    # outputs: [$SUBDIR_individual_plants.tar]
     outputs: [individual_plants_out/east,
               individual_plants_out/east_downsampled,
               individual_plants_out/west,
