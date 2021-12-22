@@ -532,7 +532,7 @@ def main():
         except yaml.YAMLError as exc:
             print(exc)
         
-        kill_workers(dictionary['workload_manager']['job_name'])
+        # kill_workers(dictionary['workload_manager']['job_name'])
 
         launch_workers(account=dictionary['workload_manager']['account'], 
                 partition=dictionary['workload_manager']['partition'], 
@@ -590,7 +590,7 @@ def main():
             # run_jx2json(json_out_path, cctools_path, batch_type=args.batch_type, manager_name=args.manager_name, retries=args.retries, port=args.port, out_log=True)
             # clean_directory()
     
-    kill_workers(dictionary['workload_manager']['job_name'])
+    # kill_workers(dictionary['workload_manager']['job_name'])
 
 
 # --------------------------------------------------
