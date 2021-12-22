@@ -405,7 +405,8 @@ def generate_makeflow_json(files_list, command, container, inputs, outputs, date
     Output:
         - json_out_path: Path to the resulting JSON file
     '''
-
+    files_list = [file.split('-')[:-1] for file in files_list]
+    
     if inputs:
 
         jx_dict = {
