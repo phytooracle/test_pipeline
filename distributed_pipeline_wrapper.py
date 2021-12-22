@@ -404,14 +404,6 @@ def generate_makeflow_json(files_list, command, container, inputs, outputs, date
     Output:
         - json_out_path: Path to the resulting JSON file
     '''
-    
-    existing_file_list = []
-
-    for file in files_list:
-        if os.path.isfile(file):
-            existing_file_list.append(file)
-
-    print(existing_file_list)
 
     if inputs:
 
@@ -425,7 +417,7 @@ def generate_makeflow_json(files_list, command, container, inputs, outputs, date
                                         seg_model_name, 
                                         det_model_name] + [input.replace('$PLANT_NAME', os.path.basename(os.path.dirname(file))) for input in inputs]
 
-                        } for file in  existing_file_list
+                        } for file in  files_list
                     ]
         } 
 
@@ -441,7 +433,7 @@ def generate_makeflow_json(files_list, command, container, inputs, outputs, date
                                         seg_model_name, 
                                         det_model_name]
 
-                        } for file in  existing_file_list
+                        } for file in  files_list
                     ]
         } 
 
