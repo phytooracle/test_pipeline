@@ -80,7 +80,7 @@ modules:
       dockerhub_path: docker://phytooracle/heatmap_ml_based_cropping:latest
     command: singularity run -B $(pwd):/mnt --pwd /mnt heatmap_ml_based_cropping.simg -p ${PLANT_PATH} -m ${DET_MODEL_PATH} -c 0.5
     distribution_level: plant
-    input_dir: [individual_plants_out, west]
+    input_dir: [individual_plants_out, combined_pointclouds]
     input_file: combined_multiway_registered.ply
     inputs: [individual_plants_out/combined_pointclouds/$PLANT_NAME,
              individual_plants_out/plant_reports/$PLANT_NAME]
