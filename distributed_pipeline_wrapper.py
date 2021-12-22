@@ -299,6 +299,20 @@ def get_bundle_json(irods_path):
 
 
 # --------------------------------------------------
+def get_season_detections():
+
+    cmd1 = 'iget -KPVT /iplant/home/shared/phytooracle/season_10_lettuce_yr_2020/level_3/stereoTop/season10_plant_clustering/stereoTop_full_season_clustering.csv'
+    sp.call(cmd1, shell=True)
+
+
+# --------------------------------------------------
+def get_gcp_file():
+
+    cmd1 = 'iget -KPVT /iplant/home/shared/phytooracle/season_10_lettuce_yr_2020/level_0/necessary_files/gcp_season_10.txt'
+    sp.call(cmd1, shell=True)
+
+
+# --------------------------------------------------
 def get_model_files(seg_model_path, det_model_path):
     """Download model weights from CyVerse DataStore
     
@@ -378,7 +392,7 @@ def kill_workers(job_name):
 
     
 # --------------------------------------------------
-def generate_makeflow_json(files_list, command, container, inputs, outputs, n_rules=1, json_out_path='wf_file.json'):
+def generate_makeflow_json(files_list, command, container, inputs, outputs, date, n_rules=1, json_out_path='wf_file.json'):
     '''
     Generate Makeflow JSON file to distribute tasks. 
 
@@ -401,7 +415,7 @@ def generate_makeflow_json(files_list, command, container, inputs, outputs, n_ru
         jx_dict = {
             "rules": [
                         {
-                            "command" : command.replace('${PLANT_PATH}', os.path.dirname(file)).replace('${SEG_MODEL_PATH}', seg_model_name).replace('${PLANT_NAME}', os.path.basename(os.path.dirname(file))).replace('${DET_MODEL_PATH}', det_model_name),
+                            "command" : command.replace('${PLANT_PATH}', os.path.dirname(file)).replace('${SEG_MODEL_PATH}', seg_model_name).replace('${PLANT_NAME}', os.path.basename(os.path.dirname(file))).replace('${DET_MODEL_PATH}', det_model_name).replace('${SUBDIR}', file).replace('${DATE}', date),
                             "outputs" : [out.replace('$PLANT_NAME', os.path.basename(os.path.dirname(file))) for out in outputs],
                             "inputs"  : [file, 
                                         container, 
@@ -417,7 +431,7 @@ def generate_makeflow_json(files_list, command, container, inputs, outputs, n_ru
         jx_dict = {
             "rules": [
                         {
-                            "command" : command.replace('${PLANT_PATH}', os.path.dirname(file)).replace('${SEG_MODEL_PATH}', seg_model_name).replace('${PLANT_NAME}', os.path.basename(os.path.dirname(file))).replace('${DET_MODEL_PATH}', det_model_name),
+                            "command" : command.replace('${PLANT_PATH}', os.path.dirname(file)).replace('${SEG_MODEL_PATH}', seg_model_name).replace('${PLANT_NAME}', os.path.basename(os.path.dirname(file))).replace('${DET_MODEL_PATH}', det_model_name).replace('${SUBDIR}', file).replace('${DATE}', date),
                             "outputs" : [out.replace('$PLANT_NAME', os.path.basename(os.path.dirname(file))) for out in outputs],
                             "inputs"  : [file, 
                                         container, 
@@ -562,9 +576,15 @@ def main():
                     get_bundle_dir(os.path.join(level_1, args.date))
                 if not os.path.isfile('bundle_list.json'):
                     get_bundle_json(os.path.join(level_1, args.date))
+                if not os.path.isfile('stereoTop_full_season_clustering.csv'):
+                    get_season_detections()
+                if not os.path.isfile('gcp_season_10.txt'):
+                    get_gcp_file()
+
                 files_list = get_file_list(dir_name, args.input_filename, level=v['distribution_level'])
                 files_list = [os.path.basename(file) for file in files_list]
                 write_file_list(files_list)
+                json_out_path = generate_makeflow_json(files_list=files_list, command=v['command'], container=v['container']['simg_name'], inputs=v['inputs'], outputs=v['outputs'], date=args.date)
 
             # files_list = get_file_list(dir_name, args.input_filename, level=v['distribution_level'])
             # write_file_list(files_list)            
