@@ -46,10 +46,10 @@ modules:
              postprocessing_out/merged_downsampled/$SUBDIR-merged.ply,
              postprocessing_out/west/$SUBDIR-west.ply,
              postprocessing_out/west_downsampled/$SUBDIR-west.ply]
-    outputs: [individual_plants_out/east/,
-              individual_plants_out/east_downsampled/,
-              individual_plants_out/west/,
-              individual_plants_out/west_downsampled/]
+    outputs: [individual_plants_out/east,
+              individual_plants_out/east_downsampled,
+              individual_plants_out/west,
+              individual_plants_out/west_downsampled]
 
   # 3:
   #   container:
