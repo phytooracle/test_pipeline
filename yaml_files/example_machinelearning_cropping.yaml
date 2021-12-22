@@ -14,21 +14,21 @@ modules:
       dockerhub_path: docker://phytooracle/3d_postprocessing:latest
     command: singularity run 3d_postprocessing.simg -i alignment/ -o postprocessing_out -f ${SUBDIR} -t transfromation.json -p stereoTop_full_season_clustering.csv -s 10 -d ${DATE} -l gcp_season_10.txt
     distribution_level: plant
-    inputs: [alignment/east/$SUBDIR/,
-             alignment/east_downsampled/$SUBDIR/, 
-             alignment/merged/$SUBDIR/,
-             alignment/merged_downsampled/$SUBDIR/,
-             alignment/west/$SUBDIR/,
-             alignment/west_downsampled/$SUBDIR/,
+    inputs: [alignment/east/$SUBDIR-east.ply,
+             alignment/east_downsampled/$SUBDIR-east.ply, 
+             alignment/merged/$SUBDIR-merged.ply,
+             alignment/merged_downsampled/$SUBDIR-merged.ply,
+             alignment/west/$SUBDIR-west.ply,
+             alignment/west_downsampled/$SUBDIR-west.ply,
              transfromation.json,
              stereoTop_full_season_clustering.csv,
              gcp_season_10.txt]
-    outputs: [postprocessing_out/east/$SUBDIR/,
-              postprocessing_out/east_downsampled/$SUBDIR/, 
-              postprocessing_out/merged/$SUBDIR/,
-              postprocessing_out/merged_downsampled/$SUBDIR/,
-              postprocessing_out/west/$SUBDIR/,
-              postprocessing_out/west_downsampled/$SUBDIR/]
+    outputs: [postprocessing_out/east/$SUBDIR-east.ply,
+              postprocessing_out/east_downsampled/$SUBDIR-east.ply, 
+              postprocessing_out/merged/$SUBDIR-merged.ply,
+              postprocessing_out/merged_downsampled/$SUBDIR-merged.ply,
+              postprocessing_out/west/$SUBDIR-west.ply,
+              postprocessing_out/west_downsampled/$SUBDIR-west.ply]
   
   # 2: 
   #   container: 
