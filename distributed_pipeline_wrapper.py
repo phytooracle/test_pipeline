@@ -244,6 +244,61 @@ def write_file_list(input_list, out_path='file.txt'):
 
 
 # --------------------------------------------------
+def download_level_1_data(irods_path):
+    args = get_args()
+    file_name = os.path.basename(irods_path)
+    direc = irods_path.split('/')[-1]
+
+    cmd1 = f'iget -rfPVT {irods_path}'
+    # cmd1 = f'iget -fKPVT {irods_path}'
+    cwd = os.getcwd()
+
+    if '.gz' in file_name: 
+        cmd2 = 'ls *.tar.gz | xargs -I {} tar -xzvf {}'
+        cmd3 = f'rm *.tar.gz'
+
+    else: 
+        cmd2 = 'ls *.tar | xargs -I {} tar -xvf {}'
+        cmd3 = f'rm *.tar'
+    
+    if args.hpc: 
+        print('>>>>>>Using data transfer node.')
+        sp.call(f"ssh filexfer 'cd {cwd}' '&& {cmd1}' '&& cd {os.path.join(cwd, direc)}' '&& {cmd2}' '&& {cmd3}' '&& exit'", shell=True)
+    else: 
+        sp.call(cmd1, shell=True)
+        sp.call(f"cd {os.path.join(cwd, direc)}")
+        sp.call(cmd2, shell=True)
+        sp.call(cmd3, shell=True)
+
+
+# --------------------------------------------------
+def get_transformation_file(irods_path, cwd):
+
+    cmd1 = f'iget -KPVT {os.path.join(irods_path, "preprocessing", "transfromation.json")}'
+    sp.call(cmd1, shell=True)
+    
+    if not os.path.isfile(os.path.join(cwd, 'transfromation.json')):
+        cmd2 = f'iget -KPVT {os.path.join(irods_path, "alignment", "transfromation.json")}'
+        sp.call(cmd2, shell=True)
+
+
+# --------------------------------------------------
+def get_bundle_dir(irods_path):
+
+    cmd1 = f'iget -rKPVT {os.path.join(irods_path, "logs", "bundle")}'
+
+    sp.call(cmd1, shell=True)
+
+
+# --------------------------------------------------
+def get_bundle_json(irods_path):
+
+    cmd1 = f'iget -KPVT {os.path.join(irods_path, "logs", "bundle_list.json")}'
+
+    sp.call(cmd1, shell=True)
+
+
+# --------------------------------------------------
 def get_model_files(seg_model_path, det_model_path):
     """Download model weights from CyVerse DataStore
     
@@ -306,6 +361,8 @@ def launch_workers(account, partition, job_name, nodes, number_tasks, number_tas
 
     os.system(f"sbatch {outfile}")
 
+
+# --------------------------------------------------
 def kill_workers(job_name):
     '''
     Kills workers once workflow has terminated.
@@ -480,12 +537,26 @@ def main():
         seg_model_name, det_model_name = get_model_files(args.seg_model, args.det_model)
 
         for k, v in dictionary['modules'].items():
+            
+            irods_data_path = os.path.join(level_1, args.date, 'alignment')
 
-            files_list = get_file_list(dir_name, args.input_filename, level=v['distribution_level'])
-            write_file_list(files_list)            
-            json_out_path = generate_makeflow_json(files_list=files_list, command=v['command'], container=v['container']['simg_name'], inputs=v['inputs'], outputs=v['outputs'])
-            run_jx2json(json_out_path, cctools_path, batch_type=args.batch_type, manager_name=args.manager_name, retries=args.retries, port=args.port, out_log=True)
-            clean_directory()
+            if dictionary['tags']['sensor']=='scanner3DTop':
+                cwd = os.getcwd()
+                level_1 = dictionary['paths']['cyverse']['input']['basename']
+                if not os.path.isdir('alignment'):
+                    download_level_1_data(irods_data_path)
+                if not os.path.isfile('transfromation.json'):
+                    get_transformation_file(os.path.join(level_1, args.date), cwd)
+                if not os.path.isdir('bundle'):
+                    get_bundle_dir(os.path.join(level_1, args.date))
+                if not os.path.isfile('bundle_list.json'):
+                    get_bundle_json(os.path.join(level_1, args.date))
+
+            # files_list = get_file_list(dir_name, args.input_filename, level=v['distribution_level'])
+            # write_file_list(files_list)            
+            # json_out_path = generate_makeflow_json(files_list=files_list, command=v['command'], container=v['container']['simg_name'], inputs=v['inputs'], outputs=v['outputs'])
+            # run_jx2json(json_out_path, cctools_path, batch_type=args.batch_type, manager_name=args.manager_name, retries=args.retries, port=args.port, out_log=True)
+            # clean_directory()
     
     kill_workers(dictionary['workload_manager']['job_name'])
 
