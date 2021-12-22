@@ -74,20 +74,21 @@ modules:
     outputs: [individual_plants_out/combined_pointclouds/$PLANT_NAME,
               individual_plants_out/plant_reports/$PLANT_NAME]
 
-  # 3:
-  #   container:
-  #     simg_name: heatmap_ml_based_cropping.simg
-  #     dockerhub_path: docker://phytooracle/heatmap_ml_based_cropping:latest
-  #   command: singularity run -B $(pwd):/mnt --pwd /mnt heatmap_ml_based_cropping.simg -p ${PLANT_PATH} -m ${DET_MODEL_PATH} -c 0.5
-  #   distribution_level: plant
-  #   input_dir: [individual_plants_out, west]
-  #   input_file: combined_multiway_registered.ply
-  #   inputs: [detecto_heatmap_lettuce_detection_weights.pth]
-  #   outputs: [segmentation_pointclouds/$PLANT_NAME/ml_crop.ply,
-  #             plant_reports/$PLANT_NAME/heatmap.jpg,
-  #             plant_reports/$PLANT_NAME/identificaiton.jpg]
+  4:
+    container:
+      simg_name: heatmap_ml_based_cropping.simg
+      dockerhub_path: docker://phytooracle/heatmap_ml_based_cropping:latest
+    command: singularity run -B $(pwd):/mnt --pwd /mnt heatmap_ml_based_cropping.simg -p ${PLANT_PATH} -m ${DET_MODEL_PATH} -c 0.5
+    distribution_level: plant
+    input_dir: [individual_plants_out, west]
+    input_file: combined_multiway_registered.ply
+    inputs: [individual_plants_out/combined_pointclouds/$PLANT_NAME,
+             individual_plants_out/plant_reports/$PLANT_NAME]
+    outputs: [segmentation_pointclouds/$PLANT_NAME/ml_crop.ply,
+              plant_reports/$PLANT_NAME/heatmap.jpg,
+              plant_reports/$PLANT_NAME/identificaiton.jpg]
 
-  # 4:
+  # 5:
   #   container: 
   #     simg_name: dgcnn_single_plant_soil_segmentation_pipeline.simg
   #     dockerhub_path: docker://phytooracle/dgcnn_single_plant_soil_segmentation_pipeline:latest
@@ -100,7 +101,7 @@ modules:
   #             plant_reports/$PLANT_NAME/soil_segmentation.csv,
   #             plant_reports/$PLANT_NAME/soil_segmentation.gif]
 
-  # 5:
+  # 6:
   #   container: 
   #     simg_name: 3d_neighbor_removal.simg
   #     dockerhub_path: docker://phytooracle/3d_neighbor_removal:latest
@@ -110,7 +111,7 @@ modules:
   #   outputs: [plant_reports/$PLANT_NAME/final.gif, 
   #             segmentation_pointclouds/$PLANT_NAME/final.ply]
   
-  # 6:
+  # 7:
   #   container: 
   #     simg_name: 3d_segmentation_dashboard_assets.simg
   #     dockerhub_path: docker://phytooracle/3d_segmentation_dashboard_assets:latest
