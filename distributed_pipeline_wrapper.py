@@ -395,11 +395,11 @@ def run_jx2json(json_out_path, cctools_path, batch_type, manager_name, retries=3
     cctools = os.path.join(home, cctools)
 
     if out_log==True:
-        arguments = f'-T {batch_type} --json {json_out_path} -a -N {manager_name} -M {manager_name} -r {retries} -p {port} -dall -o dall.log --disable-cache $@'
+        arguments = f'-T {batch_type} --skip-file-check --json {json_out_path} -a -N {manager_name} -M {manager_name} -r {retries} -p {port} -dall -o dall.log --disable-cache $@'
         cmd1 = ' '.join([cctools, arguments])
 
     else:
-        arguments = f'-T {batch_type} --json {json_out_path} -a -N {manager_name} -M {manager_name} -r {retries} -p {port} --disable-cache $@'
+        arguments = f'-T {batch_type} --skip-file-check --json {json_out_path} -a -N {manager_name} -M {manager_name} -r {retries} -p {port} --disable-cache $@'
         cmd1 = ' '.join([cctools, arguments])
 
     sp.call(cmd1, shell=True)
