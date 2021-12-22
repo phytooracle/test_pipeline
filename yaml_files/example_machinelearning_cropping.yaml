@@ -50,7 +50,7 @@ modules:
              segmentation_pointclouds/$PLANT_NAME/segmentation_plant.ply,
              segmentation_pointclouds/$PLANT_NAME/segmentation_soil.ply,
              segmentation_pointclouds/$PLANT_NAME/soil_segmentation.npy,
-             segmentation_pointclouds/$PLANT_NAME/final.ply
+             segmentation_pointclouds/$PLANT_NAME/final.ply,
              plant_reports/$PLANT_NAME/heatmap.jpg,
              plant_reports/$PLANT_NAME/identificaiton.jpg,
              plant_reports/$PLANT_NAME/soil_segmentation.csv,
