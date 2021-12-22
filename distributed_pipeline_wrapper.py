@@ -416,7 +416,7 @@ def generate_makeflow_json(files_list, command, container, inputs, outputs, date
                             "inputs"  : [file, 
                                         container, 
                                         seg_model_name, 
-                                        det_model_name] + [input.replace('$PLANT_NAME', os.path.basename(os.path.dirname(file))).replace('$SUBDIR', file) for input in inputs]
+                                        det_model_name] + [input.replace('$PLANT_NAME', os.path.basename(os.path.dirname(file))).replace('$SUBDIR', os.path.basename(file)) for input in inputs]
 
                         } for file in  files_list
                     ]

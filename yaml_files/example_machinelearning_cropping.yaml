@@ -14,7 +14,13 @@ modules:
       dockerhub_path: docker://phytooracle/3d_postprocessing:latest
     command: singularity run 3d_postprocessing.simg -i alignment/ -o postprocessing_out -f ${SUBDIR} -t transfromation.json -p stereoTop_full_season_clustering.csv -s 10 -d ${DATE} -l gcp_season_10.txt
     distribution_level: directory
-    inputs: [transfromation.json,
+    inputs: [alignment/east/$SUBDIR/,
+             alignment/east_downsampled/$SUBDIR/, 
+             alignment/merged/$SUBDIR/,
+             alignment/merged_downsampled/$SUBDIR/,
+             alignment/west/$SUBDIR/,
+             alignment/west_downsampled/$SUBDIR/,
+             transfromation.json,
              stereoTop_full_season_clustering.csv,
              gcp_season_10.txt]
     outputs: [postprocessing_out/east/$SUBDIR/,
