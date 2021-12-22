@@ -563,8 +563,8 @@ def main():
                 if not os.path.isfile('bundle_list.json'):
                     get_bundle_json(os.path.join(level_1, args.date))
 
-            # files_list = get_file_list(dir_name, args.input_filename, level=v['distribution_level'])
-            # write_file_list(files_list)            
+            files_list = get_file_list(dir_name, args.input_filename, level=v['distribution_level'])
+            write_file_list(files_list)            
             # json_out_path = generate_makeflow_json(files_list=files_list, command=v['command'], container=v['container']['simg_name'], inputs=v['inputs'], outputs=v['outputs'])
             # run_jx2json(json_out_path, cctools_path, batch_type=args.batch_type, manager_name=args.manager_name, retries=args.retries, port=args.port, out_log=True)
             # clean_directory()
