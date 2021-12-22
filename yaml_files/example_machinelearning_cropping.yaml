@@ -17,14 +17,14 @@ modules:
     inputs: []
     outputs: []
   
-  2: 
-    container: 
-      simg_name: 3d_crop_individual_plants.simg
-      dockerhub_path: docker://phytooracle/3d_crop_individual_plants:latest
-    command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_crop_individual_plants.simg -i postprocessing_out/ -p stereoTop_full_season_clustering.csv -f ${SUBDIR} -o individual_plants_out -s 10 -d ${DATE}
-    distribution_level: directory
-    inputs: []
-    outputs: []
+  # 2: 
+  #   container: 
+  #     simg_name: 3d_crop_individual_plants.simg
+  #     dockerhub_path: docker://phytooracle/3d_crop_individual_plants:latest
+  #   command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_crop_individual_plants.simg -i postprocessing_out/ -p stereoTop_full_season_clustering.csv -f ${SUBDIR} -o individual_plants_out -s 10 -d ${DATE}
+  #   distribution_level: directory
+  #   inputs: []
+  #   outputs: []
 
   # 3:
   #   container:
