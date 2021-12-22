@@ -192,7 +192,7 @@ def download_raw_data(irods_path):
 
 
 # --------------------------------------------------
-def get_file_list(directory, match_string, level):
+def get_file_list(directory, match_string='.ply', level):
     '''
     Walks through a given directory and grabs all files with the given search string.
 
