@@ -650,7 +650,6 @@ def main():
 
         for k, v in dictionary['modules'].items():
             level_1 = dictionary['paths']['cyverse']['input']['basename']
-            # dir_name = os.path.join('alignment', 'west')
             dir_name = os.path.join(*v['input_dir'])
             if dictionary['tags']['sensor']=='scanner3DTop':
                 cwd = os.getcwd()
