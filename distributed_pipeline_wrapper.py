@@ -673,7 +673,7 @@ def main():
             run_jx2json(json_out_path, cctools_path, batch_type=args.batch_type, manager_name=args.manager_name, retries=args.retries, port=args.port, out_log=True)
             clean_directory()
     
-    clean_inputs()
+    # clean_inputs()
     kill_workers(dictionary['workload_manager']['job_name'])
 
 
