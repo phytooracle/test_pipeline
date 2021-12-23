@@ -90,7 +90,7 @@ modules:
     container: 
       simg_name: dgcnn_single_plant_soil_segmentation_pipeline.simg
       dockerhub_path: docker://phytooracle/dgcnn_single_plant_soil_segmentation_pipeline:latest
-    command: singularity run -B $(pwd):/mnt --pwd /mnt dgcnn_single_plant_soil_segmentation_pipeline.simg -p ${PLANT_PATH} --model_path ${SEG_MODEL_PATH} -po segmentation_pointclouds -fo plant_reports -ef ml_crop
+    command: singularity run -B $(pwd):/mnt --pwd /mnt dgcnn_single_plant_soil_segmentation_pipeline.simg -p ${PLANT_PATH} --model_path ${SEG_MODEL_PATH} -po individual_plants_out/segmentation_pointclouds -fo individual_plants_out/plant_reports -ef ml_crop
     distribution_level: plant
     input_dir: [individual_plants_out, segmentation_pointclouds]
     input_file: ml_crop.ply
@@ -105,7 +105,7 @@ modules:
     container: 
       simg_name: 3d_neighbor_removal.simg
       dockerhub_path: docker://phytooracle/3d_neighbor_removal:latest
-    command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_neighbor_removal.simg -plant ${PLANT_NAME} -e 0.07 -pod segmentation_pointclouds -fod plant_reports
+    command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_neighbor_removal.simg -plant ${PLANT_NAME} -e 0.07 -pod individual_plants_out/segmentation_pointclouds -fod individual_plants_out/plant_reports
     distribution_level: plant
     input_dir: [individual_plants_out, segmentation_pointclouds]
     input_file: segmentation_plant.ply
@@ -117,7 +117,7 @@ modules:
     container: 
       simg_name: 3d_segmentation_dashboard_assets.simg
       dockerhub_path: docker://phytooracle/3d_segmentation_dashboard_assets:latest
-    command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_segmentation_dashboard_assets.simg -i ${PLANT_PATH} -plant ${PLANT_NAME} -pod segmentation_pointclouds -fod plant_reports
+    command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_segmentation_dashboard_assets.simg -i ${PLANT_PATH} -plant ${PLANT_NAME} -pod individual_plants_out/segmentation_pointclouds -fod individual_plants_out/plant_reports
     distribution_level: plant
     input_dir: [individual_plants_out, segmentation_pointclouds]
     input_file: segmentation_plant.ply
