@@ -8,112 +8,110 @@ tags:
   season: 10
 
 modules:
-  # 1: 
-  #   container: 
-  #     simg_name: 3d_postprocessing.simg
-  #     dockerhub_path: docker://phytooracle/3d_postprocessing:latest
-  #   command: singularity run 3d_postprocessing.simg -i alignment/ -o postprocessing_out -f ${SUBDIR} -t transfromation.json -p stereoTop_full_season_clustering.csv -s 10 -d ${DATE} -l gcp_season_10.txt
-  #   distribution_level: plant
-  #   input_dir: [alignment, west]
-  #   input_file: -west.ply
-  #   inputs: [alignment/east/$SUBDIR-east.ply,
-  #            alignment/east_downsampled/$SUBDIR-east.ply, 
-  #            alignment/merged/$SUBDIR-merged.ply,
-  #            alignment/merged_downsampled/$SUBDIR-merged.ply,
-  #            alignment/west/$SUBDIR-west.ply,
-  #            alignment/west_downsampled/$SUBDIR-west.ply,
-  #            transfromation.json,
-  #            stereoTop_full_season_clustering.csv,
-  #            gcp_season_10.txt]
-  #   outputs: [postprocessing_out/east/$SUBDIR-east.ply,
-  #             postprocessing_out/east_downsampled/$SUBDIR-east.ply, 
-  #             postprocessing_out/merged/$SUBDIR-merged.ply,
-  #             postprocessing_out/merged_downsampled/$SUBDIR-merged.ply,
-  #             postprocessing_out/west/$SUBDIR-west.ply,
-  #             postprocessing_out/west_downsampled/$SUBDIR-west.ply]
+  1: 
+    container: 
+      simg_name: 3d_postprocessing.simg
+      dockerhub_path: docker://phytooracle/3d_postprocessing:latest
+    command: singularity run 3d_postprocessing.simg -i alignment/ -o postprocessing_out -f ${SUBDIR} -t transfromation.json -p stereoTop_full_season_clustering.csv -s 10 -d ${DATE} -l gcp_season_10.txt
+    distribution_level: plant
+    input_dir: [alignment, west]
+    input_file: -west.ply
+    inputs: [alignment/east/$SUBDIR-east.ply,
+             alignment/east_downsampled/$SUBDIR-east.ply, 
+             alignment/merged/$SUBDIR-merged.ply,
+             alignment/merged_downsampled/$SUBDIR-merged.ply,
+             alignment/west/$SUBDIR-west.ply,
+             alignment/west_downsampled/$SUBDIR-west.ply,
+             transfromation.json,
+             stereoTop_full_season_clustering.csv,
+             gcp_season_10.txt]
+    outputs: [postprocessing_out/east/$SUBDIR-east.ply,
+              postprocessing_out/east_downsampled/$SUBDIR-east.ply, 
+              postprocessing_out/merged/$SUBDIR-merged.ply,
+              postprocessing_out/merged_downsampled/$SUBDIR-merged.ply,
+              postprocessing_out/west/$SUBDIR-west.ply,
+              postprocessing_out/west_downsampled/$SUBDIR-west.ply]
   
-  # 2: 
-  #   container: 
-  #     simg_name: 3d_crop_individual_plants.simg
-  #     dockerhub_path: docker://phytooracle/3d_crop_individual_plants:latest
-  #   command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_crop_individual_plants.simg -i postprocessing_out/ -p stereoTop_full_season_clustering.csv -f ${SUBDIR} -o individual_plants_out -s 10 -d ${DATE}
-  #   distribution_level: plant
-  #   input_dir: [postprocessing_out, west]
-  #   input_file: -west.ply
-  #   inputs: [transfromation.json,
-  #            stereoTop_full_season_clustering.csv,
-  #            gcp_season_10.txt,
-  #            postprocessing_out/east/$SUBDIR-east.ply,
-  #            postprocessing_out/east_downsampled/$SUBDIR-east.ply, 
-  #            postprocessing_out/merged/$SUBDIR-merged.ply,
-  #            postprocessing_out/merged_downsampled/$SUBDIR-merged.ply,
-  #            postprocessing_out/west/$SUBDIR-west.ply,
-  #            postprocessing_out/west_downsampled/$SUBDIR-west.ply]
-  #   # outputs: [$SUBDIR_individual_plants.tar]
-  #   outputs: [individual_plants_out/east,
-  #             individual_plants_out/east_downsampled,
-  #             individual_plants_out/west,
-  #             individual_plants_out/west_downsampled]
+  2: 
+    container: 
+      simg_name: 3d_crop_individual_plants.simg
+      dockerhub_path: docker://phytooracle/3d_crop_individual_plants:latest
+    command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_crop_individual_plants.simg -i postprocessing_out/ -p stereoTop_full_season_clustering.csv -f ${SUBDIR} -o individual_plants_out -s 10 -d ${DATE}
+    distribution_level: plant
+    input_dir: [postprocessing_out, west]
+    input_file: -west.ply
+    inputs: [transfromation.json,
+             stereoTop_full_season_clustering.csv,
+             gcp_season_10.txt,
+             postprocessing_out/east/$SUBDIR-east.ply,
+             postprocessing_out/east_downsampled/$SUBDIR-east.ply, 
+             postprocessing_out/merged/$SUBDIR-merged.ply,
+             postprocessing_out/merged_downsampled/$SUBDIR-merged.ply,
+             postprocessing_out/west/$SUBDIR-west.ply,
+             postprocessing_out/west_downsampled/$SUBDIR-west.ply]
+    outputs: [individual_plants_out/east,
+              individual_plants_out/east_downsampled,
+              individual_plants_out/west,
+              individual_plants_out/west_downsampled]
 
-  # 3: 
-  #   container: 
-  #     simg_name: 3d_individual_plant_registration.simg
-  #     dockerhub_path: docker://phytooracle/3d_individual_plant_registration:multiway_registration
-  #   command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_individual_plant_registration.simg -i individual_plants_out/ -p ${PLANT_NAME}
-  #   distribution_level: plant
-  #   input_dir: [individual_plants_out, west]
-  #   input_file: _cropped.ply
-  #   inputs: [transfromation.json,
-  #            stereoTop_full_season_clustering.csv,
-  #            gcp_season_10.txt,
-  #            individual_plants_out/west/$PLANT_NAME,
-  #            individual_plants_out/west_downsampled/$PLANT_NAME,
-  #            individual_plants_out/east/$PLANT_NAME,
-  #            individual_plants_out/east_downsampled/$PLANT_NAME]
+  3: 
+    container: 
+      simg_name: 3d_individual_plant_registration.simg
+      dockerhub_path: docker://phytooracle/3d_individual_plant_registration:multiway_registration
+    command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_individual_plant_registration.simg -i individual_plants_out/ -p ${PLANT_NAME}
+    distribution_level: plant
+    input_dir: [individual_plants_out, west]
+    input_file: _cropped.ply
+    inputs: [transfromation.json,
+             stereoTop_full_season_clustering.csv,
+             gcp_season_10.txt,
+             individual_plants_out/west/$PLANT_NAME,
+             individual_plants_out/west_downsampled/$PLANT_NAME,
+             individual_plants_out/east/$PLANT_NAME,
+             individual_plants_out/east_downsampled/$PLANT_NAME]
+    outputs: [individual_plants_out/combined_pointclouds/$PLANT_NAME,
+              individual_plants_out/plant_reports/$PLANT_NAME]
+# Change here
+  4:
+    container:
+      simg_name: heatmap_ml_based_cropping.simg
+      dockerhub_path: docker://phytooracle/heatmap_ml_based_cropping:latest
+    command: singularity run -B $(pwd):/mnt --pwd /mnt heatmap_ml_based_cropping.simg -p ${PLANT_PATH} -m ${DET_MODEL_PATH} -c 0.5 -po individual_plants_out/segmentation_pointclouds -fo individual_plants_out/plant_reports
+    distribution_level: plant
+    input_dir: [individual_plants_out, combined_pointclouds]
+    input_file: combined_multiway_registered.ply
+    inputs: [individual_plants_out/combined_pointclouds/$PLANT_NAME,
+             individual_plants_out/plant_reports/$PLANT_NAME]
+    outputs: [individual_plants_out/segmentation_pointclouds/$PLANT_NAME/ml_crop.ply,
+              individual_plants_out/plant_reports/$PLANT_NAME/heatmap.jpg,
+              individual_plants_out/plant_reports/$PLANT_NAME/identificaiton.jpg]
 
-  #   outputs: [individual_plants_out/combined_pointclouds/$PLANT_NAME,
-  #             individual_plants_out/plant_reports/$PLANT_NAME]
+  5:
+    container: 
+      simg_name: dgcnn_single_plant_soil_segmentation_pipeline.simg
+      dockerhub_path: docker://phytooracle/dgcnn_single_plant_soil_segmentation_pipeline:latest
+    command: singularity run -B $(pwd):/mnt --pwd /mnt dgcnn_single_plant_soil_segmentation_pipeline.simg -p ${PLANT_PATH} --model_path ${SEG_MODEL_PATH} -po segmentation_pointclouds -fo plant_reports -ef ml_crop
+    distribution_level: plant
+    input_dir: [individual_plants_out, segmentation_pointclouds]
+    input_file: ml_crop.ply
+    inputs: [individual_plants_out/segmentation_pointclouds/$PLANT_NAME/ml_crop.ply]
+    outputs: [individual_plants_out/segmentation_pointclouds/$PLANT_NAME/segmentation_plant.ply, 
+              individual_plants_out/segmentation_pointclouds/$PLANT_NAME/segmentation_soil.ply,
+              individual_plants_out/segmentation_pointclouds/$PLANT_NAME/soil_segmentation.npy,
+              individual_plants_out/plant_reports/$PLANT_NAME/soil_segmentation.csv,
+              individual_plants_out/plant_reports/$PLANT_NAME/soil_segmentation.gif]
 
-  # 4:
-  #   container:
-  #     simg_name: heatmap_ml_based_cropping.simg
-  #     dockerhub_path: docker://phytooracle/heatmap_ml_based_cropping:latest
-  #   command: singularity run -B $(pwd):/mnt --pwd /mnt heatmap_ml_based_cropping.simg -p ${PLANT_PATH} -m ${DET_MODEL_PATH} -c 0.5
-  #   distribution_level: plant
-  #   input_dir: [individual_plants_out, combined_pointclouds]
-  #   input_file: combined_multiway_registered.ply
-  #   inputs: [individual_plants_out/combined_pointclouds/$PLANT_NAME,
-  #            individual_plants_out/plant_reports/$PLANT_NAME]
-  #   outputs: [segmentation_pointclouds/$PLANT_NAME/ml_crop.ply,
-  #             plant_reports/$PLANT_NAME/heatmap.jpg,
-  #             plant_reports/$PLANT_NAME/identificaiton.jpg]
-# Stuff worked up to here
-  # 5:
-  #   container: 
-  #     simg_name: dgcnn_single_plant_soil_segmentation_pipeline.simg
-  #     dockerhub_path: docker://phytooracle/dgcnn_single_plant_soil_segmentation_pipeline:latest
-  #   command: singularity run -B $(pwd):/mnt --pwd /mnt dgcnn_single_plant_soil_segmentation_pipeline.simg -p ${PLANT_PATH} --model_path ${SEG_MODEL_PATH} -po segmentation_pointclouds -fo plant_reports -ef ml_crop
-  #   distribution_level: plant
-  #   input_dir: [segmentation_pointclouds]
-  #   input_file: ml_crop.ply
-  #   inputs: [segmentation_pointclouds/$PLANT_NAME/ml_crop.ply]
-  #   outputs: [segmentation_pointclouds/$PLANT_NAME/segmentation_plant.ply, 
-  #             segmentation_pointclouds/$PLANT_NAME/segmentation_soil.ply,
-  #             segmentation_pointclouds/$PLANT_NAME/soil_segmentation.npy,
-  #             plant_reports/$PLANT_NAME/soil_segmentation.csv,
-  #             plant_reports/$PLANT_NAME/soil_segmentation.gif]
-
-  # 6:
-  #   container: 
-  #     simg_name: 3d_neighbor_removal.simg
-  #     dockerhub_path: docker://phytooracle/3d_neighbor_removal:latest
-  #   command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_neighbor_removal.simg -plant ${PLANT_NAME} -e 0.07 -pod segmentation_pointclouds -fod plant_reports
-  #   distribution_level: plant
-  #   input_dir: [segmentation_pointclouds]
-  #   input_file: segmentation_plant.ply
-  #   inputs: [segmentation_pointclouds/$PLANT_NAME/segmentation_plant.ply]
-  #   outputs: [plant_reports/$PLANT_NAME/final.gif, 
-  #             segmentation_pointclouds/$PLANT_NAME/final.ply]
+  6:
+    container: 
+      simg_name: 3d_neighbor_removal.simg
+      dockerhub_path: docker://phytooracle/3d_neighbor_removal:latest
+    command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_neighbor_removal.simg -plant ${PLANT_NAME} -e 0.07 -pod segmentation_pointclouds -fod plant_reports
+    distribution_level: plant
+    input_dir: [individual_plants_out, segmentation_pointclouds]
+    input_file: segmentation_plant.ply
+    inputs: [individual_plants_out/segmentation_pointclouds/$PLANT_NAME/segmentation_plant.ply]
+    outputs: [individual_plants_out/plant_reports/$PLANT_NAME/final.gif, 
+              individual_plants_out/segmentation_pointclouds/$PLANT_NAME/final.ply]
   
   7:
     container: 
@@ -121,21 +119,21 @@ modules:
       dockerhub_path: docker://phytooracle/3d_segmentation_dashboard_assets:latest
     command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_segmentation_dashboard_assets.simg -i ${PLANT_PATH} -plant ${PLANT_NAME} -pod segmentation_pointclouds -fod plant_reports
     distribution_level: plant
-    input_dir: [segmentation_pointclouds]
+    input_dir: [individual_plants_out, segmentation_pointclouds]
     input_file: segmentation_plant.ply
-    inputs: [segmentation_pointclouds/$PLANT_NAME/ml_crop.ply,
-             segmentation_pointclouds/$PLANT_NAME/segmentation_plant.ply,
-             segmentation_pointclouds/$PLANT_NAME/segmentation_soil.ply,
-             segmentation_pointclouds/$PLANT_NAME/soil_segmentation.npy,
-             segmentation_pointclouds/$PLANT_NAME/final.ply,
-             plant_reports/$PLANT_NAME/heatmap.jpg,
-             plant_reports/$PLANT_NAME/identificaiton.jpg,
-             plant_reports/$PLANT_NAME/soil_segmentation.csv,
-             plant_reports/$PLANT_NAME/soil_segmentation.gif,
-             plant_reports/$PLANT_NAME/final.gif]
-    outputs: [plant_reports/$PLANT_NAME/level_1_plant_clip.gif,
-              plant_reports/$PLANT_NAME/75_ML_compare.gif,
-              plant_reports/$PLANT_NAME/segmentation_dbscan_compare.gif]
+    inputs: [individual_plants_out/segmentation_pointclouds/$PLANT_NAME/ml_crop.ply,
+             individual_plants_out/segmentation_pointclouds/$PLANT_NAME/segmentation_plant.ply,
+             individual_plants_out/segmentation_pointclouds/$PLANT_NAME/segmentation_soil.ply,
+             individual_plants_out/segmentation_pointclouds/$PLANT_NAME/soil_segmentation.npy,
+             individual_plants_out/segmentation_pointclouds/$PLANT_NAME/final.ply,
+             individual_plants_out/plant_reports/$PLANT_NAME/heatmap.jpg,
+             individual_plants_out/plant_reports/$PLANT_NAME/identificaiton.jpg,
+             individual_plants_out/plant_reports/$PLANT_NAME/soil_segmentation.csv,
+             individual_plants_out/plant_reports/$PLANT_NAME/soil_segmentation.gif,
+             individual_plants_out/plant_reports/$PLANT_NAME/final.gif]
+    outputs: [individual_plants_out/plant_reports/$PLANT_NAME/level_1_plant_clip.gif,
+              individual_plants_out/plant_reports/$PLANT_NAME/75_ML_compare.gif,
+              individual_plants_out/plant_reports/$PLANT_NAME/segmentation_dbscan_compare.gif]
 
 workload_manager:
   account: dukepauli
