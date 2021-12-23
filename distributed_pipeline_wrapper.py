@@ -13,6 +13,7 @@ import json
 import subprocess as sp
 import yaml
 import shutil
+import glob
 
 # --------------------------------------------------
 def get_args():
@@ -516,6 +517,11 @@ def clean_directory():
 
     if os.path.isfile("wf_file.json.wqlog.tr"):
         os.remove("wf_file.json.wqlog.tr")
+
+    dir_list = glob.glob('./makeflow.failed*')
+    if dir_list:
+        for direc in dir_list:
+            shutil.rmtree(direc)
 
     # if os.path.isdir('alignment'):
     #     shutil.rmtree('alignment')
