@@ -85,8 +85,8 @@ modules:
     inputs: [individual_plants_out/combined_pointclouds/$PLANT_NAME,
              individual_plants_out/plant_reports/$PLANT_NAME]
     outputs: [segmentation_pointclouds/$PLANT_NAME/ml_crop.ply,
-              individual_plants_out/plant_reports/$PLANT_NAME/heatmap.jpg,
-              individual_plants_out/plant_reports/$PLANT_NAME/identificaiton.jpg]
+              plant_reports/$PLANT_NAME/heatmap.jpg,
+              plant_reports/$PLANT_NAME/identificaiton.jpg]
 
   # 5:
   #   container: 
