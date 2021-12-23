@@ -69,7 +69,8 @@ modules:
              individual_plants_out/west_downsampled/$PLANT_NAME,
              individual_plants_out/east/$PLANT_NAME,
              individual_plants_out/east_downsampled/$PLANT_NAME]
-    outputs: [individual_plants_out/combined_pointclouds/$PLANT_NAME,
+    outputs: [individual_plants_out/segmentation_pointclouds/$PLANT_NAME,
+              # individual_plants_out/combined_pointclouds/$PLANT_NAME,
               individual_plants_out/plant_reports/$PLANT_NAME]
 # Change here
   4:
