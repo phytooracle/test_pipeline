@@ -109,6 +109,8 @@ modules:
       dockerhub_path: docker://phytooracle/3d_neighbor_removal:latest
     command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_neighbor_removal.simg -plant ${PLANT_NAME} -e 0.07 -pod segmentation_pointclouds -fod plant_reports
     distribution_level: plant
+    input_dir: [segmentation_pointclouds]
+    input_file: segmentation_plant.ply
     inputs: [segmentation_pointclouds/$PLANT_NAME/segmentation_plant.ply]
     outputs: [plant_reports/$PLANT_NAME/final.gif, 
               segmentation_pointclouds/$PLANT_NAME/final.ply]
