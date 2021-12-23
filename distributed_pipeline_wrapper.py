@@ -523,17 +523,17 @@ def clean_directory():
         for direc in dir_list:
             shutil.rmtree(direc)
 
-    # if os.path.isdir('alignment'):
-    #     shutil.rmtree('alignment')
+    if os.path.isdir('alignment'):
+        shutil.rmtree('alignment')
     
-    # if os.path.isfile('transfromation.json'):
-    #     os.remove('transfromation.json')
+    if os.path.isfile('transfromation.json'):
+        os.remove('transfromation.json')
     
-    # if os.path.isdir('bundle'):
-    #     shutil.rmtree('bundle')
+    if os.path.isdir('bundle'):
+        shutil.rmtree('bundle')
 
-    # if os.path.isfile('bundle_list.json'):
-    #     os.remove('bundle_list.json')
+    if os.path.isfile('bundle_list.json'):
+        os.remove('bundle_list.json')
     
 
 # --------------------------------------------------
