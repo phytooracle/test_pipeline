@@ -247,6 +247,16 @@ def write_file_list(input_list, out_path='file.txt'):
 
 # --------------------------------------------------
 def download_level_1_data(irods_path):
+    '''
+    Downloads previously processed level_1 ouputs on CyVerse DataStore for continued data processing.
+
+    Input:
+        - irods_path: Path to the level_1 data on the CyVerse DataStore
+    
+    Output: 
+        - Downloaded level_1 outputs in the current working directory
+    '''
+
     args = get_args()
     file_name = os.path.basename(irods_path)
     direc = irods_path.split('/')[-1]
@@ -275,6 +285,16 @@ def download_level_1_data(irods_path):
 
 # --------------------------------------------------
 def get_transformation_file(irods_path, cwd):
+    '''
+    Downloads the date-specific transformation JSON file for post-processing of 3D data.
+
+    Input:
+        - irods_path: Path to the transformation file on CyVerse DataStore
+        - cwd: Current working directory
+    
+    Output: 
+        - Downloaded transformation file in the current working directory
+    '''
 
     cmd1 = f'iget -KPVT {os.path.join(irods_path, "preprocessing", "transfromation.json")}'
     sp.call(cmd1, shell=True)
@@ -286,6 +306,15 @@ def get_transformation_file(irods_path, cwd):
 
 # --------------------------------------------------
 def get_bundle_dir(irods_path):
+    '''
+    Downloads the date-specific bundle/ directory containing bundles for distributed processing.
+
+    Input:
+        - irods_path: Path to the bundle/ directory on CyVerse DataStore
+    
+    Output: 
+        - Downloaded bundle/ directory in the current working directory
+    '''
 
     cmd1 = f'iget -rKPVT {os.path.join(irods_path, "logs", "bundle")}'
 
@@ -294,7 +323,16 @@ def get_bundle_dir(irods_path):
 
 # --------------------------------------------------
 def get_bundle_json(irods_path):
+    '''
+    Downloads the date-specific bundle JSON file for distributed processing.
 
+    Input:
+        - irods_path: Path to the bundle JSON file on CyVerse DataStore 
+    
+    Output: 
+        - Downloaded bundle JSON file in the current working directory
+    '''
+    
     cmd1 = f'iget -KPVT {os.path.join(irods_path, "logs", "bundle_list.json")}'
 
     sp.call(cmd1, shell=True)
@@ -302,6 +340,15 @@ def get_bundle_json(irods_path):
 
 # --------------------------------------------------
 def get_season_detections():
+    '''
+    Gets the season-specific detection clustering file from the CyVerse DataStore.
+
+    Input:
+        - NA
+    
+    Output: 
+        - Season-specific detection clustering file
+    '''
 
     cmd1 = 'iget -KPVT /iplant/home/shared/phytooracle/season_10_lettuce_yr_2020/level_3/stereoTop/season10_plant_clustering/stereoTop_full_season_clustering.csv'
     sp.call(cmd1, shell=True)
@@ -309,6 +356,15 @@ def get_season_detections():
 
 # --------------------------------------------------
 def get_gcp_file():
+    '''
+    Downloads the season-specific GCP file from the CyVerse DataStore.
+
+    Input:
+        - NA
+    
+    Output: 
+        - Downloaded GCP file in the current working directory
+    '''
 
     cmd1 = 'iget -KPVT /iplant/home/shared/phytooracle/season_10_lettuce_yr_2020/level_0/necessary_files/gcp_season_10.txt'
     sp.call(cmd1, shell=True)
@@ -523,7 +579,18 @@ def clean_directory():
         for direc in dir_list:
             shutil.rmtree(direc)
 
+
+# --------------------------------------------------
 def clean_inputs():
+    '''
+    Cleans directory from distributed pipeline input directories and files.
+
+    Input:
+        - NA
+    
+    Output: 
+        - Clean working directory
+    '''
     
     if os.path.isdir('alignment'):
         shutil.rmtree('alignment')
