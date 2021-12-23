@@ -103,38 +103,39 @@ modules:
   #             plant_reports/$PLANT_NAME/soil_segmentation.csv,
   #             plant_reports/$PLANT_NAME/soil_segmentation.gif]
 
-  6:
+  # 6:
+  #   container: 
+  #     simg_name: 3d_neighbor_removal.simg
+  #     dockerhub_path: docker://phytooracle/3d_neighbor_removal:latest
+  #   command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_neighbor_removal.simg -plant ${PLANT_NAME} -e 0.07 -pod segmentation_pointclouds -fod plant_reports
+  #   distribution_level: plant
+  #   input_dir: [segmentation_pointclouds]
+  #   input_file: segmentation_plant.ply
+  #   inputs: [segmentation_pointclouds/$PLANT_NAME/segmentation_plant.ply]
+  #   outputs: [plant_reports/$PLANT_NAME/final.gif, 
+  #             segmentation_pointclouds/$PLANT_NAME/final.ply]
+  
+  7:
     container: 
-      simg_name: 3d_neighbor_removal.simg
-      dockerhub_path: docker://phytooracle/3d_neighbor_removal:latest
-    command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_neighbor_removal.simg -plant ${PLANT_NAME} -e 0.07 -pod segmentation_pointclouds -fod plant_reports
+      simg_name: 3d_segmentation_dashboard_assets.simg
+      dockerhub_path: docker://phytooracle/3d_segmentation_dashboard_assets:latest
+    command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_segmentation_dashboard_assets.simg -i ${PLANT_PATH} -plant ${PLANT_NAME} -pod segmentation_pointclouds -fod plant_reports
     distribution_level: plant
     input_dir: [segmentation_pointclouds]
     input_file: segmentation_plant.ply
-    inputs: [segmentation_pointclouds/$PLANT_NAME/segmentation_plant.ply]
-    outputs: [plant_reports/$PLANT_NAME/final.gif, 
-              segmentation_pointclouds/$PLANT_NAME/final.ply]
-  
-  # 7:
-  #   container: 
-  #     simg_name: 3d_segmentation_dashboard_assets.simg
-  #     dockerhub_path: docker://phytooracle/3d_segmentation_dashboard_assets:latest
-  #   command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_segmentation_dashboard_assets.simg -i ${PLANT_PATH} -plant ${PLANT_NAME} -pod segmentation_pointclouds -fod plant_reports
-  #   distribution_level: plant
-  #   inputs: [segmentation_pointclouds/$PLANT_NAME/ml_crop.ply,
-  #            segmentation_pointclouds/$PLANT_NAME/segmentation_plant.ply,
-  #            segmentation_pointclouds/$PLANT_NAME/segmentation_soil.ply,
-  #            segmentation_pointclouds/$PLANT_NAME/soil_segmentation.npy,
-  #            segmentation_pointclouds/$PLANT_NAME/final.ply,
-  #            plant_reports/$PLANT_NAME/heatmap.jpg,
-  #            plant_reports/$PLANT_NAME/identificaiton.jpg,
-  #            plant_reports/$PLANT_NAME/soil_segmentation.csv,
-  #            plant_reports/$PLANT_NAME/soil_segmentation.gif,
-  #            plant_reports/$PLANT_NAME/final.gif]
-
-  #   outputs: [plant_reports/$PLANT_NAME/level_1_plant_clip.gif,
-  #             plant_reports/$PLANT_NAME/75_ML_compare.gif,
-  #             plant_reports/$PLANT_NAME/segmentation_dbscan_compare.gif]
+    inputs: [segmentation_pointclouds/$PLANT_NAME/ml_crop.ply,
+             segmentation_pointclouds/$PLANT_NAME/segmentation_plant.ply,
+             segmentation_pointclouds/$PLANT_NAME/segmentation_soil.ply,
+             segmentation_pointclouds/$PLANT_NAME/soil_segmentation.npy,
+             segmentation_pointclouds/$PLANT_NAME/final.ply,
+             plant_reports/$PLANT_NAME/heatmap.jpg,
+             plant_reports/$PLANT_NAME/identificaiton.jpg,
+             plant_reports/$PLANT_NAME/soil_segmentation.csv,
+             plant_reports/$PLANT_NAME/soil_segmentation.gif,
+             plant_reports/$PLANT_NAME/final.gif]
+    outputs: [plant_reports/$PLANT_NAME/level_1_plant_clip.gif,
+              plant_reports/$PLANT_NAME/75_ML_compare.gif,
+              plant_reports/$PLANT_NAME/segmentation_dbscan_compare.gif]
 
 workload_manager:
   account: dukepauli
