@@ -121,7 +121,8 @@ modules:
     distribution_level: plant
     input_dir: [individual_plants_out, segmentation_pointclouds]
     input_file: segmentation_plant.ply
-    inputs: [individual_plants_out/segmentation_pointclouds/$PLANT_NAME/ml_crop.ply,
+    inputs: [individual_plants_out/segmentation_pointclouds/$PLANT_NAME/combined_multiway_registered.ply,
+             individual_plants_out/segmentation_pointclouds/$PLANT_NAME/ml_crop.ply,
              individual_plants_out/segmentation_pointclouds/$PLANT_NAME/segmentation_plant.ply,
              individual_plants_out/segmentation_pointclouds/$PLANT_NAME/segmentation_soil.ply,
              individual_plants_out/segmentation_pointclouds/$PLANT_NAME/soil_segmentation.npy,
