@@ -14,6 +14,7 @@ modules:
       dockerhub_path: docker://phytooracle/3d_postprocessing:latest
     command: singularity run 3d_postprocessing.simg -i alignment/ -o postprocessing_out -f ${SUBDIR} -t transfromation.json -p stereoTop_full_season_clustering.csv -s 10 -d ${DATE} -l gcp_season_10.txt
     distribution_level: wq
+    file_level: 
     input_dir: [alignment, west]
     input_file: -west.ply
     inputs: [alignment/east/$SUBDIR-east.ply,
@@ -38,6 +39,7 @@ modules:
       dockerhub_path: docker://phytooracle/3d_crop_individual_plants:latest
     command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_crop_individual_plants.simg -i postprocessing_out/ -p stereoTop_full_season_clustering.csv -f ${SUBDIR} -o individual_plants_out -s 10 -d ${DATE} && tar -cvf ${SUBDIR}_individual_plants.tar individual_plants_out/
     distribution_level: wq
+    file_level: 
     input_dir: [postprocessing_out, west]
     input_file: -west.ply
     inputs: [transfromation.json,
@@ -57,6 +59,7 @@ modules:
       dockerhub_path: docker://phytooracle/slack_notifications:latest
     command: tar -xvf ${SUBDIR}_individual_plants.tar && rm ${SUBDIR}_individual_plants.tar 
     distribution_level: local
+    file_level: 
     input_dir: [postprocessing_out, west]
     input_file: -west.ply
     inputs: [$BASENAME_individual_plants.tar]
