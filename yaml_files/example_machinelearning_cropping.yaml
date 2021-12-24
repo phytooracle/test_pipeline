@@ -62,7 +62,7 @@ modules:
   #   inputs: [$BASENAME_individual_plants.tar]
   #   outputs: []
 
-  3: 
+  4: 
     container: 
       simg_name: 3d_individual_plant_registration.simg
       dockerhub_path: docker://phytooracle/3d_individual_plant_registration:multiway_registration
@@ -80,7 +80,7 @@ modules:
     outputs: [individual_plants_out/segmentation_pointclouds/$PLANT_NAME,
               individual_plants_out/plant_reports/$PLANT_NAME]
 
-  4:
+  5:
     container:
       simg_name: heatmap_ml_based_cropping.simg
       dockerhub_path: docker://phytooracle/heatmap_ml_based_cropping:latest
@@ -94,7 +94,7 @@ modules:
               individual_plants_out/plant_reports/$PLANT_NAME/heatmap.jpg,
               individual_plants_out/plant_reports/$PLANT_NAME/identificaiton.jpg]
 
-  5:
+  6:
     container: 
       simg_name: dgcnn_single_plant_soil_segmentation_pipeline.simg
       dockerhub_path: docker://phytooracle/dgcnn_single_plant_soil_segmentation_pipeline:latest
@@ -109,7 +109,7 @@ modules:
               individual_plants_out/plant_reports/$PLANT_NAME/soil_segmentation.csv,
               individual_plants_out/plant_reports/$PLANT_NAME/soil_segmentation.gif]
 
-  6:
+  7:
     container: 
       simg_name: 3d_neighbor_removal.simg
       dockerhub_path: docker://phytooracle/3d_neighbor_removal:latest
@@ -121,7 +121,7 @@ modules:
     outputs: [individual_plants_out/plant_reports/$PLANT_NAME/final.gif, 
               individual_plants_out/segmentation_pointclouds/$PLANT_NAME/final.ply]
   
-  7:
+  8:
     container: 
       simg_name: 3d_segmentation_dashboard_assets.simg
       dockerhub_path: docker://phytooracle/3d_segmentation_dashboard_assets:latest
