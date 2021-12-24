@@ -83,7 +83,7 @@ modules:
              individual_plants_out/east_downsampled/$PLANT_NAME]
     outputs: [individual_plants_out/segmentation_pointclouds/$PLANT_NAME/combined_multiway_registered.ply]
               # individual_plants_out/plant_reports/$PLANT_NAME]
-
+# Worked up to here
   5:
     container:
       simg_name: heatmap_ml_based_cropping.simg
