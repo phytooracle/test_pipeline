@@ -60,6 +60,7 @@ modules:
     input_dir: [postprocessing_out, west]
     input_file: -west.ply
     inputs: [$BASENAME_individual_plants.tar]
+    outputs: []
     # outputs: [individual_plants_out/east,
     #           individual_plants_out/east_downsampled,
     #           individual_plants_out/west,
