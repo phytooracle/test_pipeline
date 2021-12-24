@@ -13,7 +13,7 @@ modules:
       simg_name: 3d_postprocessing.simg
       dockerhub_path: docker://phytooracle/3d_postprocessing:latest
     command: singularity run 3d_postprocessing.simg -i alignment/ -o postprocessing_out -f ${SUBDIR} -t transfromation.json -p stereoTop_full_season_clustering.csv -s 10 -d ${DATE} -l gcp_season_10.txt
-    distribution_level: plant
+    distribution_level: wq
     input_dir: [alignment, west]
     input_file: -west.ply
     inputs: [alignment/east/$SUBDIR-east.ply,
@@ -37,7 +37,7 @@ modules:
       simg_name: 3d_crop_individual_plants.simg
       dockerhub_path: docker://phytooracle/3d_crop_individual_plants:latest
     command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_crop_individual_plants.simg -i postprocessing_out/ -p stereoTop_full_season_clustering.csv -f ${SUBDIR} -o individual_plants_out -s 10 -d ${DATE} && tar -cvf ${SUBDIR}_individual_plants.tar individual_plants_out/
-    distribution_level: plant
+    distribution_level: wq
     input_dir: [postprocessing_out, west]
     input_file: -west.ply
     inputs: [transfromation.json,
@@ -145,9 +145,11 @@ workload_manager:
   number_tasks: 1
   numer_tasks_per_node: 1
   time_minutes: 1440
+  retries: 2
+  port: 0
   
   mem_per_cpu: 5
-  manager_name: 
+  manager_name: phytooracle_manager
   min_worker: 100
   max_worker: 300
   cores_per_worker: 6
