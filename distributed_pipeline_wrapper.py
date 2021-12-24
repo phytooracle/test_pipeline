@@ -472,8 +472,8 @@ def generate_makeflow_json(level, files_list, command, container, inputs, output
                 subdir_list = []
                 for item in files_list:
                     subdir = os.path.basename(os.path.dirname(item))
-                    if subdir_list not in subdir_list:
-                        subdir_list.append(subdir)
+                    subdir_list.append(subdir)
+                subdir_list = list(set(subdir_list))
 
                 write_file_list(subdir_list)
                 
