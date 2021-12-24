@@ -49,7 +49,7 @@ modules:
              postprocessing_out/merged_downsampled/$SUBDIR-merged.ply,
              postprocessing_out/west/$SUBDIR-west.ply,
              postprocessing_out/west_downsampled/$SUBDIR-west.ply]
-    outputs: [$SUBDIR_individual_plants.tar]
+    outputs: [$SUBDIR_BASENAME_individual_plants.tar]
 
   3: 
     container: 
