@@ -68,6 +68,7 @@ modules:
       dockerhub_path: docker://phytooracle/3d_individual_plant_registration:multiway_registration
     command: singularity run -B $(pwd):/mnt --pwd /mnt 3d_individual_plant_registration.simg -i individual_plants_out/ -p ${PLANT_NAME} -o individual_plants_out/segmentation_pointclouds/${PLANT_NAME}
     distribution_level: wq
+    file_level: subdir
     input_dir: [individual_plants_out, west]
     input_file: _cropped.ply
     inputs: [transfromation.json,

@@ -219,8 +219,9 @@ def get_file_list(directory, level, match_string='.ply'):
         for name in dirs:
             subdir_list.append(os.path.join(root, name))
 
-    # if level=='plant':
-    #     files_list = files_list
+    if level=='subdir':
+        files_list = subdir_list
+        files_list = list(set(files_list))
     # elif level=='directory':
     #     files_list = subdir_list
 
@@ -667,7 +668,7 @@ def main():
                 if not os.path.isfile('gcp_season_10.txt'):
                     get_gcp_file()
 
-            files_list = get_file_list(dir_name, level=v['distribution_level'], match_string=v['input_file'])
+            files_list = get_file_list(dir_name, level=v['file_level'], match_string=v['input_file'])
             write_file_list(files_list)
             json_out_path = generate_makeflow_json(files_list=files_list, command=v['command'], container=v['container']['simg_name'], inputs=v['inputs'], outputs=v['outputs'], date=args.date, sensor=dictionary['tags']['sensor'], json_out_path=f'wf_file_{k}.json')
             run_jx2json(json_out_path, cctools_path, batch_type=v['distribution_level'], manager_name=dictionary['workload_manager']['manager_name'], retries=dictionary['workload_manager']['retries'], port=dictionary['workload_manager']['port'], out_log=True)
