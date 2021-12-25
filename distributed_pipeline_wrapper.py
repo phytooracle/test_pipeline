@@ -683,10 +683,10 @@ def main():
                     download_level_1_data(irods_data_path)
                 if not os.path.isfile('transfromation.json'):
                     get_transformation_file(os.path.join(level_1, args.date), cwd)
-                if not os.path.isdir('bundle'):
-                    get_bundle_dir(os.path.join(level_1, args.date))
-                if not os.path.isfile('bundle_list.json'):
-                    get_bundle_json(os.path.join(level_1, args.date))
+                # if not os.path.isdir('bundle'):
+                #     get_bundle_dir(os.path.join(level_1, args.date))
+                # if not os.path.isfile('bundle_list.json'):
+                #     get_bundle_json(os.path.join(level_1, args.date))
                 if not os.path.isfile('stereoTop_full_season_clustering.csv'):
                     get_season_detections()
                 if not os.path.isfile('gcp_season_10.txt'):
@@ -698,7 +698,7 @@ def main():
             run_jx2json(json_out_path, cctools_path, batch_type=v['distribution_level'], manager_name=dictionary['workload_manager']['manager_name'], retries=dictionary['workload_manager']['retries'], port=dictionary['workload_manager']['port'], out_log=True)
             clean_directory()
     
-    # clean_inputs()
+    clean_inputs()
     kill_workers(dictionary['workload_manager']['job_name'])
 
 
