@@ -596,10 +596,25 @@ def tar_outputs(scan_date, dictionary):
             if not os.path.isfile(file_path):
                 with tarfile.open(file_path, 'w') as tar:
                     tar.add(v, recursive=True)
-            shutil.move(v, os.path.join(scan_date, outdir))
 
     os.chdir(cwd)
 
+
+# --------------------------------------------------
+def upload_outputs(date, dictionary):
+    root = dictionary['paths']['cyverse']['output']['basename']
+    subdir = dictionary['paths']['cyverse']['output']['subdir']
+    # cyverse_path = os.path.join(root, subdir, date)
+
+    cwd = os.getcwd()
+
+    cmd1 = f'icd {root}'
+    sp.call(cmd1, shell=True)
+
+    cmd2 = f'iput -rfKPVT {date}'
+    sp.call(cmd2, shell=True)
+
+        
 
 # --------------------------------------------------
 def clean_directory():
