@@ -601,6 +601,17 @@ def tar_outputs(scan_date, dictionary):
 
 
 # --------------------------------------------------
+def create_pipeline_logs(scan_date):
+    cwd = os.getcwd()
+
+    if not os.path.isdir(os.path.join(cwd, scan_date, 'logs')):
+        os.makedirs(os.path.join(cwd, scan_date, 'logs'))
+
+    for item in glob.glob('./*.json*'):
+        shutil.move(item, os.path.join(cwd, scan_date, 'logs', item))
+
+
+# --------------------------------------------------
 def upload_outputs(date, dictionary):
     args= get_args()
     root = dictionary['paths']['cyverse']['output']['basename']
@@ -752,6 +763,7 @@ def main():
     
 
         tar_outputs(args.date, dictionary)
+        create_pipeline_logs(args.date)
         upload_outputs(args.date, dictionary)
     # clean_inputs()
     # kill_workers(dictionary['workload_manager']['job_name'])
