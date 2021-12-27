@@ -581,17 +581,24 @@ def tar_outputs(scan_date, dictionary):
     cwd = os.getcwd()
 
     for item in dictionary['paths']['pipeline_outpath']:
-        print(item)
+        if os.path.isdir(item):
+            os.chdir(item)
 
-        # if not os.path.isdir(os.path.join(cwd, scan_date)):
-        #     os.makedirs(os.path.join(cwd, scan_date))
+        outdir = item
+        
+        if not os.path.isdir(os.path.join(cwd, scan_date, outdir)):
+            os.makedirs(os.path.join(cwd, scan_date, outdir))
 
-        # file_path = os.path.join(cwd, scan_date, outdir, f'{scan_date}_{v}_plants.tar') 
-        # print(f'Creating {file_path}.')
-        # if not os.path.isfile(file_path):
-        #     with tarfile.open(file_path, 'w') as tar:
-        #         tar.add(v, recursive=True)
-        # shutil.move(v, os.path.join(scan_date, outdir))
+        for v in dictionary['paths']['outpath_subdirs']:
+
+            file_path = os.path.join(cwd, scan_date, outdir, f'{scan_date}_{v}_plants.tar') 
+            print(f'Creating {file_path}.')
+            if not os.path.isfile(file_path):
+                with tarfile.open(file_path, 'w') as tar:
+                    tar.add(v, recursive=True)
+            shutil.move(v, os.path.join(scan_date, outdir))
+
+    os.chdir(cwd)
 
 
 # --------------------------------------------------
