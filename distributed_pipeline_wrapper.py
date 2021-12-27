@@ -751,6 +751,7 @@ def main():
     
 
         tar_outputs(args.date, dictionary)
+        upload_outputs(args.date, dictionary)
     # clean_inputs()
     # kill_workers(dictionary['workload_manager']['job_name'])
 
