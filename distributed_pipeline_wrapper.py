@@ -693,6 +693,16 @@ def clean_inputs(date):
 
     if os.path.isdir(date):
         shutil.rmtree(date)
+
+    slurm_list = glob.glob('./slurm-*')
+    if slurm_list:
+        for slurm in slurm_list:
+            os.remove(slurm)
+    
+    wq_list = glob.glob('./wq-pool-*')
+    if wq_list:
+        for wq in wq_list:
+            shutil.rmtree(wq)
     
 
 # --------------------------------------------------
