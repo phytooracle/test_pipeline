@@ -613,7 +613,7 @@ def upload_outputs(date, dictionary):
 
     if args.hpc: 
         print('>>>>>>Using data transfer node.')
-        sp.call(f"ssh filexfer 'icd {root}' '&& iput -rfKPVT {date}' '&& exit'", shell=True)
+        sp.call(f"ssh filexfer 'cd {cwd}' '&& icd {root}' '&& iput -rfKPVT {date}' '&& exit'", shell=True)
 
     else:
         
