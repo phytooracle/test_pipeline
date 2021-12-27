@@ -170,9 +170,8 @@ workload_manager:
   worker_timeout_seconds: 300
 
 paths:
-  pipeline_outpath:
-    pointclouds: segmentation_pointclouds #../{date}/{concatenated_tag}/
-    dashboard: plant_reports #../{date}/{concatendated_tag}/
+  pipeline_outpath: [individual_plants_out]
+  outpath_subdirs: [east, east_downsampled, plant_reports, segmentation_pointclouds, west, west_downsampled]
 
   cyverse: 
     input: 
