@@ -602,17 +602,25 @@ def tar_outputs(scan_date, dictionary):
 
 # --------------------------------------------------
 def upload_outputs(date, dictionary):
+    args= get_args()
     root = dictionary['paths']['cyverse']['output']['basename']
     subdir = dictionary['paths']['cyverse']['output']['subdir']
     # cyverse_path = os.path.join(root, subdir, date)
 
     cwd = os.getcwd()
 
-    cmd1 = f'icd {root}'
-    sp.call(cmd1, shell=True)
 
-    cmd2 = f'iput -rfKPVT {date}'
-    sp.call(cmd2, shell=True)
+    if args.hpc: 
+        print('>>>>>>Using data transfer node.')
+        sp.call(f"ssh filexfer 'icd {root}' '&& iput -rfKPVT {date}' '&& exit'", shell=True)
+
+    else:
+        
+        cmd1 = f'icd {root}'
+        sp.call(cmd1, shell=True)
+
+        cmd2 = f'iput -rfKPVT {date}'
+        sp.call(cmd2, shell=True)
 
         
 
