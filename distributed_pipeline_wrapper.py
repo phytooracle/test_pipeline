@@ -608,6 +608,7 @@ def upload_outputs(date, dictionary):
     # cyverse_path = os.path.join(root, subdir, date)
 
     cwd = os.getcwd()
+    print(cwd)
 
 
     if args.hpc: 
