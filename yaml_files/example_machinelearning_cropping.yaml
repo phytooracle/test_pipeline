@@ -157,7 +157,7 @@ workload_manager:
   job_name: phytooracle_worker
   nodes: 1
   number_tasks: 1
-  numer_tasks_per_node: 1
+  number_tasks_per_node: 1
   time_minutes: 1440
   retries: 2
   port: 0
