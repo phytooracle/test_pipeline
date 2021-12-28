@@ -572,14 +572,15 @@ def run_jx2json(json_out_path, cctools_path, batch_type, manager_name, retries=3
     home = os.path.expanduser('~')
     cctools = os.path.join(home, cctools_path, 'bin', 'makeflow')
     cctools = os.path.join(home, cctools)
+    timeout = 'timeout 1h'
 
     if out_log==True:
         arguments = f'-T {batch_type} --skip-file-check --json {json_out_path} -a -N {manager_name} -M {manager_name} -r {retries} -p {port} -dall -o dall.log --disable-cache $@'
-        cmd1 = ' '.join([cctools, arguments])
+        cmd1 = ' '.join([timeout, cctools, arguments])
 
     else:
         arguments = f'-T {batch_type} --skip-file-check --json {json_out_path} -a -N {manager_name} -M {manager_name} -r {retries} -p {port} --disable-cache $@'
-        cmd1 = ' '.join([cctools, arguments])
+        cmd1 = ' '.join([timeout, cctools, arguments])
 
     sp.call(cmd1, shell=True)
 
