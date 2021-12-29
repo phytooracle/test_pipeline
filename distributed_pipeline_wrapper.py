@@ -595,6 +595,7 @@ def create_pipeline_logs(scan_date):
     Output: 
         - Makeflow/Workqueue logs in the <scan_date>/logs directory
     '''
+    args = get_args()
     cwd = os.getcwd()
 
     if not os.path.isdir(os.path.join(cwd, scan_date, 'logs')):
@@ -602,6 +603,9 @@ def create_pipeline_logs(scan_date):
 
     for item in glob.glob('./*.json*'):
         shutil.move(item, os.path.join(cwd, scan_date, 'logs', item))
+    
+    if os.path.isfile(os.path.join(cwd, args.yaml)):
+        shutil.copy(os.path.join(cwd, args.yaml), os.path.join(cwd, scan_date, 'logs', 'processing_instructions.yaml'))
 
 
 # --------------------------------------------------
