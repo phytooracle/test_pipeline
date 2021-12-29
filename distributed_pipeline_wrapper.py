@@ -116,7 +116,6 @@ def build_containers(dictionary):
     Output: 
         - Singularity images (SIMG files)
     """
-
     for k, v in dictionary['modules'].items():
         container = v['container']
         if not os.path.isfile(container["simg_name"]):
@@ -136,7 +135,6 @@ def download_cctools(cctools_version = '7.1.12', architecture = 'x86_64', sys_os
     Output: 
         - path to cctools on working machine
     '''
-
     cwd = os.getcwd()
     home = os.path.expanduser('~')
     
@@ -166,7 +164,6 @@ def download_raw_data(irods_path):
         Output: 
             - Extracted files from the tarball.
     """
-
     args = get_args()
     file_name = os.path.basename(irods_path)
     dir_name = file_name.split('.')[0]
@@ -209,7 +206,6 @@ def get_file_list(directory, level, match_string='.ply'):
         - subdir_list: List containing all subdirectories within the raw data.
         - files_list: List containing all files within each subdirectory within the raw data.
     '''
-
     files_list = []
     subdir_list = []
 
@@ -235,7 +231,6 @@ def write_file_list(input_list, out_path='file.txt'):
     Output: 
         - TXT file.  
     '''
-
     textfile = open(out_path, "w")
     for element in input_list:
         textfile.write(element + "\n")
@@ -253,7 +248,6 @@ def download_level_1_data(irods_path):
     Output: 
         - Downloaded level_1 outputs in the current working directory
     '''
-
     args = get_args()
     file_name = os.path.basename(irods_path)
     direc = irods_path.split('/')[-1]
@@ -282,6 +276,16 @@ def download_level_1_data(irods_path):
 
 # --------------------------------------------------
 def get_required_files_3d(dictionary, date):
+    '''
+    Downloads required inputs for scanner3DTop data post-processing.
+
+    Input:
+        - dictionary: Dictionary variable (YAML file)
+        - date: Scan date being processed
+    
+    Output: 
+        - Downloaded files/directories in the current working directory
+    '''
     level_1 = dictionary['paths']['cyverse']['input']['basename']
     cwd = os.getcwd()
     irods_data_path = os.path.join(level_1, date, 'alignment')
@@ -307,7 +311,6 @@ def get_transformation_file(irods_path, cwd):
     Output: 
         - Downloaded transformation file in the current working directory
     '''
-
     cmd1 = f'iget -KPVT {os.path.join(irods_path, "preprocessing", "transfromation.json")}'
     sp.call(cmd1, shell=True)
     
@@ -327,7 +330,6 @@ def get_bundle_dir(irods_path):
     Output: 
         - Downloaded bundle/ directory in the current working directory
     '''
-
     cmd1 = f'iget -rKPVT {os.path.join(irods_path, "logs", "bundle")}'
 
     sp.call(cmd1, shell=True)
@@ -344,7 +346,6 @@ def get_bundle_json(irods_path):
     Output: 
         - Downloaded bundle JSON file in the current working directory
     '''
-    
     cmd1 = f'iget -KPVT {os.path.join(irods_path, "logs", "bundle_list.json")}'
 
     sp.call(cmd1, shell=True)
@@ -361,7 +362,6 @@ def get_season_detections():
     Output: 
         - Season-specific detection clustering file
     '''
-
     cmd1 = 'iget -KPVT /iplant/home/shared/phytooracle/season_10_lettuce_yr_2020/level_3/stereoTop/season10_plant_clustering/stereoTop_full_season_clustering.csv'
     sp.call(cmd1, shell=True)
 
@@ -377,7 +377,6 @@ def get_gcp_file():
     Output: 
         - Downloaded GCP file in the current working directory
     '''
-
     cmd1 = 'iget -KPVT /iplant/home/shared/phytooracle/season_10_lettuce_yr_2020/level_0/necessary_files/gcp_season_10.txt'
     sp.call(cmd1, shell=True)
 
@@ -393,7 +392,6 @@ def get_model_files(seg_model_path, det_model_path):
     Output: 
         - Downloaded model weight files.
     """
-    
     if not os.path.isfile(os.path.basename(seg_model_path)):
         cmd1 = f'iget -fKPVT {seg_model_path}'
         sp.call(cmd1, shell=True)
@@ -429,7 +427,6 @@ def launch_workers(account, partition, job_name, nodes, number_tasks, number_tas
     Output: 
         - Running workers on an HPC system
     '''
-
     with open(outfile, 'w') as fh:
         fh.writelines("#!/bin/bash -l\n")
         fh.writelines(f"#SBATCH --account={account}\n")
@@ -457,7 +454,6 @@ def kill_workers(job_name):
     Output: 
         - Kills workers on an HPC system
     '''
-
     os.system(f"scancel --name {job_name}")
 
     
@@ -584,7 +580,6 @@ def run_jx2json(json_out_path, cctools_path, batch_type, manager_name, retries=3
     Output: 
         - Running workflow
     '''
-
     home = os.path.expanduser('~')
     cctools = os.path.join(home, cctools_path, 'bin', 'makeflow')
     cctools = os.path.join(home, cctools)
@@ -612,7 +607,6 @@ def tar_outputs(scan_date, dictionary):
     Output: 
         - Tar files containing all output data
     '''
-
     cwd = os.getcwd()
 
     for item in dictionary['paths']['pipeline_outpath']:
@@ -637,6 +631,15 @@ def tar_outputs(scan_date, dictionary):
 
 # --------------------------------------------------
 def create_pipeline_logs(scan_date):
+    '''
+    Moves all Makeflow/Workqueue logs to the <scan_date>/logs directory. Will be uploaded to CyVerse.
+
+    Input:
+        - scan_date: Date of the scan
+    
+    Output: 
+        - Makeflow/Workqueue logs in the <scan_date>/logs directory
+    '''
     cwd = os.getcwd()
 
     if not os.path.isdir(os.path.join(cwd, scan_date, 'logs')):
@@ -648,6 +651,16 @@ def create_pipeline_logs(scan_date):
 
 # --------------------------------------------------
 def upload_outputs(date, dictionary):
+    '''
+    Uploads bundled data to the CyVerse path ('paths/cyverse/output/basename' value) specified in the YAML file.
+
+    Input:
+        - date: Date of the scan
+        - dictionary: Dictionary variable (YAML file)
+    
+    Output: 
+        - Uploaded data on CyVerse DataStore
+    '''  
     args= get_args()
     root = dictionary['paths']['cyverse']['output']['basename']
     subdir = dictionary['paths']['cyverse']['output']['subdir']
@@ -682,7 +695,6 @@ def clean_directory():
     Output: 
         - Clean working directory
     '''
-
     if os.path.isfile("dall.log"):
         os.remove("dall.log")
     
@@ -707,7 +719,6 @@ def clean_inputs(date):
     Output: 
         - Clean working directory
     '''
-    
     if os.path.isdir('alignment'):
         shutil.rmtree('alignment')
 
@@ -759,7 +770,7 @@ def main():
 
             except yaml.YAMLError as exc:
                 print(exc)
-                
+
             if dictionary['tags']['sensor']=='scanner3DTop':
                 get_required_files_3d(dictionary=dictionary, date=date)
             
@@ -795,8 +806,7 @@ def main():
             tar_outputs(date, dictionary)
             create_pipeline_logs(date)
             upload_outputs(date, dictionary)
-            clean_inputs(date)
-        
+            clean_inputs(date)        
 
 
 # --------------------------------------------------
