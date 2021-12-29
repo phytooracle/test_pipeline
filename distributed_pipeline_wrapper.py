@@ -637,7 +637,6 @@ def upload_outputs(date, dictionary):
         cmd2 = f'iput -rfKPVT {date}'
         sp.call(cmd2, shell=True)
 
-        
 
 # --------------------------------------------------
 def clean_directory():
