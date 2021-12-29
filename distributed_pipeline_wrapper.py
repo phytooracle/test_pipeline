@@ -25,44 +25,6 @@ def get_args():
         description='PhytoOracle | Scalable, modular phenomic data processing pipelines',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    parser.add_argument('-if',
-                        '--input_filename',
-                        help='Filename of input files',
-                        metavar='str',
-                        type=str,
-                        default='.ply')
-                        # default='combined_multiway_registered.ply')
-
-    parser.add_argument('-dl',
-                        '--distribution_level',
-                        help='Level of distribution, either "plant" or "directory"',
-                        metavar='str',
-                        type=str,
-                        choices=['plant', 'directory'], 
-                        default='plant')
-
-    parser.add_argument('-bt',
-                        '--batch_type',
-                        help='Type of batch distribution',
-                        metavar='str',
-                        type=str,
-                        choices=['local', 'dryrun', 'condor', 'sge', 'pbs', 'torque', 'blue_waters', 'slurm', 'moab', 'cluster', 'wq', 'amazon', 'mesos'], 
-                        default='wq')
-
-    parser.add_argument('-mn',
-                        '--manager_name',
-                        help='Name of workflow manager',
-                        metavar='str',
-                        type=str,
-                        default='phytooracle_manager')
-
-    parser.add_argument('-r',
-                        '--retries',
-                        help='Number of retries for a failed job',
-                        metavar='int',
-                        type=int,
-                        default=2)
-
     parser.add_argument('-hpc',
                         '--hpc',
                         help='Add flag if running on an HPC system.',
@@ -74,13 +36,6 @@ def get_args():
                         nargs='+',
                         type=str,
                         required=True)
-
-    parser.add_argument('-p',
-                        '--port',
-                        help='Port number on which to run the pipeline',
-                        metavar='int',
-                        type=int,
-                        default=0)
 
     parser.add_argument('-y',
                         '--yaml',
