@@ -283,17 +283,16 @@ def download_level_1_data(irods_path):
 # --------------------------------------------------
 def get_required_files_3d(dictionary, date):
     level_1 = dictionary['paths']['cyverse']['input']['basename']
-    if dictionary['tags']['sensor']=='scanner3DTop':
-        cwd = os.getcwd()
-        irods_data_path = os.path.join(level_1, date, 'alignment')
-        if not os.path.isdir('alignment'):
-            download_level_1_data(irods_data_path)
-        if not os.path.isfile('transfromation.json'):
-            get_transformation_file(os.path.join(level_1, date), cwd)
-        if not os.path.isfile('stereoTop_full_season_clustering.csv'):
-            get_season_detections()
-        if not os.path.isfile('gcp_season_10.txt'):
-            get_gcp_file()
+    cwd = os.getcwd()
+    irods_data_path = os.path.join(level_1, date, 'alignment')
+    if not os.path.isdir('alignment'):
+        download_level_1_data(irods_data_path)
+    if not os.path.isfile('transfromation.json'):
+        get_transformation_file(os.path.join(level_1, date), cwd)
+    if not os.path.isfile('stereoTop_full_season_clustering.csv'):
+        get_season_detections()
+    if not os.path.isfile('gcp_season_10.txt'):
+        get_gcp_file()
 
 
 # --------------------------------------------------
@@ -760,8 +759,9 @@ def main():
 
             except yaml.YAMLError as exc:
                 print(exc)
-
-            get_required_files_3d(dictionary=dictionary, date=date)
+                
+            if dictionary['tags']['sensor']=='scanner3DTop':
+                get_required_files_3d(dictionary=dictionary, date=date)
             
             if args.hpc:
                 launch_workers(account=dictionary['workload_manager']['account'], 
