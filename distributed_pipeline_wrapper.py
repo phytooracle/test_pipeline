@@ -714,7 +714,7 @@ def main():
     for date in args.date:
 
         clean_directory()
-        kill_workers(dictionary['workload_manager']['job_name'])
+        
         
         with open(args.yaml, 'r') as stream:
             try:
@@ -724,7 +724,8 @@ def main():
 
             except yaml.YAMLError as exc:
                 print(exc)
-
+                
+            kill_workers(dictionary['workload_manager']['job_name'])
             if dictionary['tags']['sensor']=='scanner3DTop':
                 get_required_files_3d(dictionary=dictionary, date=date)
             
