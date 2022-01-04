@@ -22,7 +22,7 @@ def comparison_row(plant_name, tags, color):
     return_html += f"""
     <tr>
     <td bgcolor={color}>
-        <a href="{plant_name}/">{plant_name}</a><br>
+        <p style="color:white;">{plant_name}</p>
     </td>
     <td>
     """
@@ -33,19 +33,19 @@ def comparison_row(plant_name, tags, color):
         <table>
         <tr>
         <td>
-            {tag}
+            <a href="{tag}/plant_reports/index_1.html">{"<br>".join(tag.split("_"))}</a>
         </td>
         <td>
-            <a href="{tag}/plant_reports/{plant_name}/level_1_plant_clip.gif"><img style="max-width: 300; max-height: 300px" src='{tag}/plant_reports/{plant_name}/level_1_plant_clip.gif'></a>
+            <a href="{tag}/plant_reports/{plant_name}/75_ML_compare.gif"><img style="max-width: 300; max-height: 300px" src='{tag}/plant_reports/{plant_name}/75_ML_compare.gif'></a>
             <!input type="checkbox" name="crop" onchange="do_crop_checkbox()"/>
         </td>
         <td>
             <a href="{tag}/plant_reports/{plant_name}/soil_segmentation.gif"><img style="max-width: 300; max-height: 300px" src='{tag}/plant_reports/{plant_name}/soil_segmentation.gif'></a>
-            <!input type="checkbox" name="ground" onchange="do_ground_checkbox()" />
+            <input type="checkbox" name="{tag}_ground" onchange="{tag}_checkbox()" />
         </td>
         <td>
-            <a href="{tag}/plant_reports/{plant_name}/final.gif"><img style="max-width: 300; max-height: 300px" src='{tag}/plant_reports/{plant_name}/final.gif'></a>
-            <!input type="checkbox" name="segmentation" onchange="do_segmentation_checkbox()" />
+            <a href="{tag}/plant_reports/{plant_name}/segmentation_dbscan_compare.gif"><img style="max-width: 300; max-height: 300px" src='{tag}/plant_reports/{plant_name}/segmentation_dbscan_compare.gif'></a>
+            <!input type="checkbox" name="segmentation" onchange="{tag}_checkbox()" />
         </td>
         </tr>
         </table>
@@ -62,7 +62,7 @@ def plant_data_row(plant_name):
         <a href="{plant_name}/">{plant_name}</a><br>
     </td>
     <td>
-        <a href="{plant_name}/level_1_plant_clip.gif"><img style="max-width: 300; max-height: 300px" src='{plant_name}/level_1_plant_clip.gif'></a>
+        <a href="{plant_name}/75_ML_compare.gif"><img style="max-width: 300; max-height: 300px" src='{plant_name}/75_ML_compare.gif'></a>
         <input type="checkbox" name="crop" onchange="do_crop_checkbox()"/>
     </td>
     <td>
@@ -70,13 +70,43 @@ def plant_data_row(plant_name):
         <input type="checkbox" name="ground" onchange="do_ground_checkbox()" />
     </td>
     <td>
-        <a href="{plant_name}/final.gif"><img style="max-width: 300; max-height: 300px" src='{plant_name}/final.gif'></a>
+        <a href="{plant_name}/segmentation_dbscan_compare.gif"><img style="max-width: 300; max-height: 300px" src='{plant_name}/segmentation_dbscan_compare.gif'></a>
         <input type="checkbox" name="segmentation" onchange="do_segmentation_checkbox()" />
     </td>
-    <td>
-        <a href="{plant_name}/poly_crop-fitting.jpg"><img style="max-width: 300; max-height: 300px" src='{plant_name}/poly_crop-fitting.jpg'></a>
-    </td>
     """
+
+def combination_row_bottom(tags):
+
+    return_html = "</table>"
+
+    for tag in tags:
+        return_html += f"""
+            <p><br>
+            <p><label id="{tag}_count">{tag}: 0</label></p>
+        """
+
+    return_html += """
+            <script>
+    """
+
+    for tag in tags:
+
+        return_html += f"""
+                function {tag}_checkbox() {{
+        """
+        return_html += f"""
+                  document.getElementById("{tag}_count").innerHTML = "Flags: " + total + " (" + perc.toFixed(2) + "%)";
+                  let total = document.querySelectorAll('input[name="{tag}_ground"]:checked').length;
+                  let perc = total / document.querySelectorAll('input[name="{tag}_ground"]').length * 100;
+        """
+    return_html += """
+            }
+            </script>
+        <p>
+        <hr>
+    """
+
+    return return_html
 
 def plant_data_row_bottom():
     return """
@@ -85,7 +115,6 @@ def plant_data_row_bottom():
             <td><center><label id="cropCount">Flagged: 0</label></center></td>
             <td><center><label id="groundCount">Flagged: 0</label></center></td>
             <td><center><label id="segmentationCount">Flagged: 0</label></center></td>
-            <td></td>
         </tr>
         </table>
 <p>
@@ -219,7 +248,7 @@ class OutputTagPage(GenericPage):
             #breakpoint()
 
             if link_text is not None:
-                return_html += f"<li><a href='../../{combination_name}.html'>{link_text}</a>\n"
+                return_html += f"<li><a href='../../{combination_name}_1.html'>{link_text}</a>\n"
 
         return return_html
         

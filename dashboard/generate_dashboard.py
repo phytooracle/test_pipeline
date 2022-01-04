@@ -86,19 +86,18 @@ def make_comparison_pages(date, date_tags):
     tag_combinations = list(itertools.combinations(tags, 2))
     for combination in tag_combinations:
         combination_name = "-vs-".join(combination)
-        combinationPage  = dashboard_html.GenericPage(f"{date}/{combination_name}.html",
-                                                      name=combination_name)
+
         # find plants that they have in common
         tag1_plants = filesystem_functions.get_plants_in_dir(os.path.join(date, combination[0]))
         tag2_plants = filesystem_functions.get_plants_in_dir(os.path.join(date, combination[1]))
-        plant_dirs = list(set(tag1_plants + tag2_plants))
+        common_plants = list(set(tag1_plants + tag2_plants))
 
-        n_pages = -(-len(plant_dirs)//N_PLANTS_PER_PAGE)  # Round up.  3.0->3, 3.1->4
-        page_list = dashboard_html.divide_list_into_chunks(plant_dirs, n_pages)
+        n_pages = -(-len(common_plants)//N_PLANTS_PER_PAGE)  # Round up.  3.0->3, 3.1->4
+        page_list = dashboard_html.divide_list_into_chunks(common_plants, n_pages)
 
-        nav_html = f"{len(plant_dirs)} plants have been divided into {n_pages} page/s...<br>"
+        nav_html = f"{len(common_plants)} plants have been divided into {n_pages} page/s...<br>"
         for n in range(n_pages):
-            nav_html += f"<li><a href='index_{n+1}.html'>Page {n+1}</a>\n"
+            nav_html += f"<li><a href='{combination_name}_{n+1}.html'>Page {n+1}</a>\n"
 
         #####################
         # Loop through pages
@@ -108,9 +107,14 @@ def make_comparison_pages(date, date_tags):
             page_count += 1
 
             print(f"Creating page {page_count} of {n_pages}")
+            combinationPage  = dashboard_html.GenericPage(
+                    f"{date}/{combination_name}_{page_count}.html",
+                    name=combination_name,
+            )
             
             # note: tagPage is not a string, it is a class.
             combinationPage += f"""
+                <h2>{date}</h2>
                 <h2>Page {page_count} of {n_pages}</h2>
                 <hr>
                 {nav_html}
@@ -118,18 +122,19 @@ def make_comparison_pages(date, date_tags):
                 <table>
             """
 
-        colors = ("#332211", "#112233")
-        count = 0
-        for plant_name in plant_dirs:
-            count += 1
-            color = colors[ count%2 ]
-            combinationPage += dashboard_html.comparison_row(plant_name, combination, color)
+            colors = ("#332211", "#112233")
+            count = 0
+            for plant_name in plant_dirs:
+                count += 1
+                color = colors[ count%2 ]
+                combinationPage += dashboard_html.comparison_row(plant_name, combination, color)
 
-        combinationPage += f"""
-            </table>
-        """
+            combinationPage += dashboard_html.combination_row_bottom(combination)
+            combinationPage += f"""
+                </table>
+            """
 
-        combinationPage.save_page()
+            combinationPage.save_page()
 
 
 
