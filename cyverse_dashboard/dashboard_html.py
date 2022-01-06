@@ -5,6 +5,9 @@ import numpy as np
 import filesystem_functions
 import pprint
 
+# removed yaml saving - travis
+
+
 __root_path__ = "."
 
 def divide_list_into_chunks(a, n):
@@ -54,23 +57,22 @@ def comparison_row(plant_name, tags, color):
     return return_html
 
 
-def plant_data_row(plant_name):
-
+def plant_data_row(plant_name, plant_path):
     return f"""
     <tr>
     <td>
         <a href="{plant_name}/">{plant_name}</a><br>
     </td>
     <td>
-        <a href="{plant_name}/75_ML_compare.gif"><img style="max-width: 300; max-height: 300px" src='{plant_name}/75_ML_compare.gif'></a>
+        <a href="{plant_path}/75_ML_compare.gif"><img style="max-width: 300; max-height: 300px" src='{plant_path}/75_ML_compare.gif'></a>
         <input type="checkbox" name="crop" onchange="do_crop_checkbox()"/>
     </td>
     <td>
-        <a href="{plant_name}/soil_segmentation.gif"><img style="max-width: 300; max-height: 300px" src='{plant_name}/soil_segmentation.gif'></a>
+        <a href="{plant_path}/soil_segmentation.gif"><img style="max-width: 300; max-height: 300px" src='{plant_path}/soil_segmentation.gif'></a>
         <input type="checkbox" name="ground" onchange="do_ground_checkbox()" />
     </td>
     <td>
-        <a href="{plant_name}/segmentation_dbscan_compare.gif"><img style="max-width: 300; max-height: 300px" src='{plant_name}/segmentation_dbscan_compare.gif'></a>
+        <a href="{plant_path}/segmentation_dbscan_compare.gif"><img style="max-width: 300; max-height: 300px" src='{plant_path}/segmentation_dbscan_compare.gif'></a>
         <input type="checkbox" name="segmentation" onchange="do_segmentation_checkbox()" />
     </td>
     """
@@ -196,35 +198,31 @@ class GenericPage(object):
 class OutputTagPage(GenericPage):
 
     def do_setup(self):
-        self.import_yaml()
+        # self.import_yaml()
         self.date = self.name.split("/")[0]
 
-    def header(self):
-        foo = self.make_compare_with_links()
-        return f"""
-            <html>
-            <head>
-            <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
-            <link href="https://codepen.io/chriddyp/pen/bWLwgP.css" rel="stylesheet">
-            </head>
-            <a href="../../../index.html">Dashboard Home</a><br>
-            <h1>{self.name}</h1>
-            <hr>
-            <table>
-            <tr>
-            <td width="50%">
-                <small>
-                    <a href="../config.yaml">The YAML File!...</a><br>
-                    <pre>{pprint.pformat(self.yaml_dict['tags'])}</pre>
-                </small>
-            </td>
-            <td>
-                <b>Compare this output with other {self.date} runs:</b><br>
-                {foo}
-            </td>
-            </tr>
-            </table>
-        """
+    # def header(self):
+    #     # foo = self.make_compare_with_links()
+    #     return f"""
+    #         <html>
+    #         <head>
+    #         <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    #         <link href="https://codepen.io/chriddyp/pen/bWLwgP.css" rel="stylesheet">
+    #         </head>
+    #         <a href="../../../index.html">Dashboard Home</a><br>
+    #         <h1>{self.name}</h1>
+    #         <hr>
+    #         <table>
+    #         <tr>
+    #         <td width="50%">
+    #         </td>
+    #         <td>
+    #             <b>Compare this output with other {self.date} runs:</b><br>
+    #             {foo}
+    #         </td>
+    #         </tr>
+    #         </table>
+    #     """
 
     def make_compare_with_links(self):
         import itertools
@@ -257,19 +255,18 @@ class OutputTagPage(GenericPage):
         return f"""
             <hr>
             <small>
-            Full Yaml File:<p>
-            <pre>{pprint.pformat(self.yaml_dict)}</pre>
+
             </small>
             </body>
             </html>
         """
 
 
-    def import_yaml(self):
+    # def import_yaml(self):
 
-        with open(os.path.join(self.name,"config.yaml"), 'r') as stream:
-            try:
-                self.yaml_dict = yaml.safe_load(stream)
-            except yaml.YAMLError as exc:
-                print(exc)
+    #     with open(os.path.join(self.name,"config.yaml"), 'r') as stream:
+    #         try:
+    #             self.yaml_dict = yaml.safe_load(stream)
+    #         except yaml.YAMLError as exc:
+    #             print(exc)
 
