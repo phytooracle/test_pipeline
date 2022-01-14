@@ -81,7 +81,7 @@ def find_all_plant_names_cyverse(de_path, tag):
     date_paths = find_available_date_paths(de_path)
     plant_paths = find_plant_paths_cyverse(date_paths, tag)
     plant_names = [os.path.basename(i) for i in plant_paths]
-    print(plant_names)
+    # print(plant_names)
     return plant_names
 
 def get_all_plants(root_path="."):
@@ -108,6 +108,7 @@ def find_plant_names_in_dir_cyverse(de_path, tag_path):
         return separated
     except:
         print('No plants found in ' , tag_path)
+        return 'foo'
 
 def get_plants_in_dir(path="."):
     return convert_paths_to_names(get_plant_paths(os.path.join(path)))

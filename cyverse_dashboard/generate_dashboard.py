@@ -239,6 +239,8 @@ if __name__ == "__main__":
         print(date_tags)
         date_tags.sort()
         for tag_path in date_tags:
+
+            print('Date tags = ', date_tags)
             # dummyIndextagPage is wierd.  We only make it to get the path to pass
             # to metaPage.  The real tag pages get created in make_output_process_tag_pages
             # a hack because I coded myself into a corner, and dont care at the moment. [NPH]
@@ -253,6 +255,10 @@ if __name__ == "__main__":
 
             # ALl this needs to point to cyverse
             plant_paths = filesystem_functions.find_plant_names_in_dir_cyverse(cyverse_path, tag_path)
+
+            if plant_paths == 'foo':
+                print('No plants found, on to next dir')
+                break
             n_plants = len(plant_paths)
             metaPage += f"({n_plants} plants processed)"
 
@@ -263,6 +269,8 @@ if __name__ == "__main__":
 
         # note: GenericPage() is a class, not a string, it is a class, so
         #       don't be fooled by the += applied to it.
-        datePage.save_page()
+
+        if plant_paths != 'foo':
+            datePage.save_page()
 
     metaPage.save_page()
